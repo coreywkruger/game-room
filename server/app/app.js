@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const config = require('../config/config.json');
 const db = require('../config/db');
 const _ = require('underscore');
-const ws = require('../config/router_ws');
 
 var App = function() {
 	this.mongo = new db.Mongo();
@@ -18,7 +17,6 @@ var App = function() {
 		console.log(req.method + ': ' + req.path);
 		next();
 	});
-	this.ws = new ws();
 
 	this.app.use(function(req, res, next) {
 		res.header('Access-Control-Allow-Origin', req.headers.origin);

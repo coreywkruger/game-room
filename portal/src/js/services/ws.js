@@ -14,20 +14,21 @@ controlServices.factory('websocketService', ["$q",
 			this.init = function(host, port) {
 
 				this.socket = new WebSocket('ws://' + host + ':' + port); //new WebSocket('ws://localhost:3334');
-				this.socket.onopen = function() {
-					setInterval(function() {
-						console.log('interval', this.websocket_id);
-						if (this.socket.bufferedAmount == 0) {
-							// this.socket.send(JSON.stringify({
-							// 	"event": "connected",
-							// 	"data": {
-							// 		"room_id": "12345"
-							// 	},
-							// 	"api-key": "abcdefg",
-							// 	"websocket_id": this.websocket_id
-							// }));
-						}
-					}.bind(this), 1000);
+				this.socket.onopen = function(a, b, c) {
+					// setInterval(function() {
+					// console.log('interval', this.websocket_id);
+					if (this.socket.bufferedAmount == 0) {
+						this.socket.send(JSON.stringify({
+							"event": "connected",
+							"data": {
+								"room_id": "12345"
+							},
+							"api-key": "abcdefg",
+							"websocket_id": this.websocket_id
+						}));
+
+					}
+					// }.bind(this), 1000);
 				}.bind(this);
 			};
 
@@ -43,7 +44,8 @@ controlServices.factory('websocketService', ["$q",
 				console.log('listening');
 				this.socket.onmessage = function(event) {
 					var msg = deserialize(event.data);
-					console.log(msg);
+
+					console.log('||'.msg);
 					if (this.websocket_id) {
 						if (this.websocket_id == msg.websocket_id) {
 							if (this.events[msg.event]) {
@@ -51,7 +53,7 @@ controlServices.factory('websocketService', ["$q",
 							}
 						}
 					} else if (msg.event == "initialized") {
-						console.log(msg.websocket_id);
+						// console.log(msg.websocket_id);
 
 						this.websocket_id = msg.websocket_id;
 						this.room_ids = msg.data.rooms;

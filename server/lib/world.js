@@ -22,7 +22,7 @@ var Room = function() {
 		} else {
 
 		}
-	}.bind(this)
+	}.bind(this);
 
 	this.assignUser = function(connection) {
 		if (_.size(this.users) < this.max_users) {
@@ -34,7 +34,6 @@ var Room = function() {
 
 				connection.channelToConnection = new Channel(messageHandler);
 				connection.channelToRoom = new Channel(receiveMessage);
-
 				console.log(_.keys(this.users));
 				return this.users[connection.id];
 			} else {

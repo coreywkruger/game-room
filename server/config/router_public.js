@@ -1,7 +1,9 @@
 const express = require('express'),
-	controllers = require('../app/controllers');
+	controllers = require('../app/controllers'),
+	ws = require('../config/router_ws');
 
 router = new express();
+wsserver = new ws();
 
 router.all('/*', function(req, res, next) {
 	next();
@@ -24,6 +26,11 @@ router.get('/signup', function(req, res, next) {
 		res.send(data)
 	});
 });
+
+router.get('/room/:id', function(req, res, next) {
+
+});
+
 
 // router.get('/version', function(req, res, next) {
 // 	var versionObj = config.get('version');

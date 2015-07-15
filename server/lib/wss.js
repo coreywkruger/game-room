@@ -27,6 +27,7 @@ var WSS = function() {
 		var new_connection = new Connection(connection_id, ws);
 
 		this.connections[connection_id] = new_connection;
+
 		connectionCallback(new_connection);
 	}.bind(this));
 }
