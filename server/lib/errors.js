@@ -1,30 +1,4 @@
 /**
- * ResolveTransfer Error
- * Failed to Resolve Transfer
- */
-function ResolveTransferError(message) {
-	this.code = 500;
-	this.message = message;
-	this.name = 'ResolveTransferError';
-	// Use compostion here since using inheritance results in false stack traces.
-	this.error = new Error();
-	this.type = 'resolution_error';
-};
-
-/**
- * SubmitTransfer Error
- * Failed to Submit Transfer
- */
-function SubmitTransferError(message) {
-	this.code = 500;
-	this.message = message;
-	this.name = 'SubmitTransferError';
-	// Use compostion here since using inheritance results in false stack traces.
-	this.error = new Error();
-	this.type = 'submission_error';
-};
-
-/**
  * Authentication Error
  * Missing Auth Keys or invalid Authentication
  */
@@ -103,27 +77,11 @@ function DatabaseError(message, detail) {
 	this.code = 500;
 };
 
-/**
- * Email Error
- * An error occurred while reading or writing to permanent storage
- */
-function EmailError(message) {
-	this.code = 422;
-	this.message = message;
-	this.name = 'EmailError';
-	// Use compostion here since using inheritance results in false stack traces.
-	this.error = new Error();
-	this.type = 'email_error';
-};
-
 module.exports = {
-	ResolveTransferError: ResolveTransferError,
-	SubmitTransferError: SubmitTransferError,
 	AuthenticationError: AuthenticationError,
 	InvalidRequestError: InvalidRequestError,
 	NotFoundError: NotFoundError,
 	ApiError: ApiError,
 	DatabaseError: DatabaseError,
-	EmailError: EmailError,
 	DuplicateError: DuplicateError
 };

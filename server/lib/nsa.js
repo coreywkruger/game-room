@@ -3,61 +3,18 @@ const CryptoJS = require('crypto-js');
 const Crypto = require('crypto');
 const RSA = require('ursa');
 
-//RSA:
-//  http://stackoverflow.com/questions/8520973/how-to-create-a-pair-private-public-keys-using-node-js-crypto
-
 module.exports = {
-	bootupCheck: bootupCheck,
-
 	random: random,
 	randomAsciiString: randomAsciiString,
-
 	randomNumber: randomNumber,
 	randomAsciiString: randomAsciiString,
-
-	encryptWallet: encryptWallet,
-	decryptWallet: decryptWallet,
-
 	encryptSession: encryptSession,
 	decryptSession: decryptSession,
 	hashSession: hashSession
 }
 
-function bootupCheck(cb) {
-	try {
-		var a = encryptWallet('aaaaa');
-		var b = encryptSession('aaaaa');
-		var c = decryptSession(b);
-		var d = hashSession('aaaaa');
-	} catch (e) {
-		// Log and rethrow
-		console.log('Encryption library threw exception');
-		throw e;
-	}
-	if (c != 'aaaaa') {
-		throw new Error("Encryption check failed");
-	}
-}
-
-
 function random(length, cb) {
 	return randomAsciiString(length);
-}
-
-
-
-function encryptWallet(data) {
-
-	var pub = RSA.createPublicKey(config.get('wallet_public').key, 'base64');
-
-	return pub.encrypt(data, 'utf8', 'base64');
-}
-
-function decryptWallet(data) {
-
-	var priv = RSA.createPrivateKey(config.get('wallet_private').key, '', 'base64');
-
-	return priv.decrypt(data, 'base64', 'utf8');
 }
 
 function encryptSession(data) {
@@ -80,22 +37,6 @@ function hashSession(data) {
 
 	return hash.toString();
 }
-
-/*
-function aes_encrypt(data) {
-
-	var encrypted = CryptoJS.AES.encrypt(data, config.get('app').wallet_key);
-
-	return encrypted.toString();
-}
-
-function aes_decrypt(data) {
-
-	var plaintext = CryptoJS.AES.decrypt(data, config.get('app').wallet_key);
-
-	return plaintext.toString(CryptoJS.enc.Utf8);
-}
-*/
 
 /** Sync */
 function randomString(length, chars) {

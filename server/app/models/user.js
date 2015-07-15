@@ -60,36 +60,4 @@ User.methods.comparePassword = function(password, cb) {
 	});
 };
 
-// Client.methods.pretty = function() {
-
-// 	return {
-// 		id: this._id.toString(),
-// 		api_key: this.api_key,
-// 		api_secret: this.api_secret,
-
-// 		email: this.email,
-// 		webhook: this.webhook,
-// 		name: this.name,
-// 		phone: this.phone,
-// 		balances: this.balances,
-// 		company: this.company,
-// 		type: this.type,
-// 		branding: this.branding,
-
-// 		street_address_1: this.street_address_1,
-// 		street_address_2: this.street_address_2,
-
-// 		country: this.country,
-// 		city: this.city,
-// 		state: this.state,
-// 		zip: this.zip,
-// 		tax_id: this.tax_id,
-// 		website: this.website,
-// 		portal_features: this.portal_features,
-// 		currency: this.currency,
-// 		updated_at: this.updated_at,
-// 		created_at: this.created_at
-// 	}
-// }
-
 module.exports = mongoose.model('User', User);

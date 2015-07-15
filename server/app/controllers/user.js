@@ -3,7 +3,7 @@ const config = require('./../../config/config.json'),
 	errors = require('./../../lib/errors'),
 	models = require('./../models');
 
-var Client = {
+var User = {
 	create: function(cb) {
 		var email = this.params.email,
 			password = this.params.password;
@@ -17,30 +17,30 @@ var Client = {
 		}
 
 		// Check if Email is in DB
-		models.Client.findOne({
+		models.User.findOne({
 			"email": email
-		}, function(err, client) {
+		}, function(err, user) {
 			if (err) {
-				return cb(new errors.DatabaseError('Could not find client', err));
+				return cb(new errors.DatabaseError('Could not find user', err));
 			}
-			if (client) {
+			if (user) {
 				return cb(new errors.DuplicateError('Email: "' + email + '" already registered'));
 			}
 
 			// CREATE new USER
-			var client = new models.Client({
+			var user = new models.User({
 				email: email,
 				password: password
 			});
 
-			client.save(function(err) {
+			user.save(function(err) {
 				if (err) {
 					return cb(err);
 				}
-				cb(null, client);
+				cb(null, user);
 			});
 		});
 	}
 };
 
-module.exports = Client;
+module.exports = User;
