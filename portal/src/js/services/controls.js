@@ -22,7 +22,9 @@ controlServices.factory('parallelKeyService', [
 			var exec_funs = function() {
 				for (var key in this.codes) {
 					if (this.codes[key]) {
-						this.funs[key]();
+						if (this.funs[key]) {
+							this.funs[key]();
+						}
 					}
 				}
 			}.bind(this);

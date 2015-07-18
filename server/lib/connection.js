@@ -4,18 +4,14 @@ var Connection = function(id, ws) {
 	this.room_id;
 	this.message_buffer = [];
 
-	this.sendMessage = function(args) {
-		self.message_buffer.push(args);
-	}
-
-	this.transmitMessage = function(args) {
-		this.ws.send(serialize(args));
-	}
+	this.receiveMessage = function(args) {
+		this.message_buffer.push(args);
+	}.bind(this);
 
 	setInterval(function() {
 		if (self.message_buffer.length > 0) {
-			var msg = self.popMessage();
-			self.transmitMessage(msg);
+			var msg = this.popMessage();
+			this.ws.send(serialize(msg));
 		}
 	}.bind(this), 1);
 
@@ -30,7 +26,7 @@ var Connection = function(id, ws) {
 
 	var connectionCallback = function() {};
 
-	this.onMessage = function(cb) {
+	this.initMessage = function(cb) {
 		connectionCallback = cb;
 	};
 
@@ -38,34 +34,33 @@ var Connection = function(id, ws) {
 		ws.on('close', function() {
 			console.log('closing:', this.id);
 			// this.disconnect(this.id);
-			this.channelToRoom.sendMessage({
-				event: 'close',
-				data: {
-					id: this.id
-				}
-			})
+			if (this.room_id) {
+				this.channelToRoom.sendMessage({
+					event: 'close',
+					data: {
+						id: this.id
+					}
+				})
+			}
 		}.bind(this));
 	}.bind(this);
 
 	this.ws.on('message', function(message) {
-		console.log('message:', message);
+		// console.log('message:', this.room_id);
 		var msg = deserialize(message);
-		connectionCallback(msg);
+
+		if (this.room_id == undefined) {
+			return connectionCallback(msg);
+		}
+
+		if (this.channelToRoom) {
+			this.channelToRoom.sendMessage(msg);
+		}
 	}.bind(this));
+
 	this.onClose(function() {
 		console.log('closed');
 	});
-}
-
-Connection.prototype.receiveMessage = function(args) {
-
-}
-
-Connection.prototype.disconnect = function(event) {
-	// this.sendMessage(event)
-	// this.onClose(function() {
-	// 	console.log('closed');
-	// });
 }
 
 function deserialize(message) {

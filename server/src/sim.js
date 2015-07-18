@@ -2,16 +2,17 @@ const Agent = require('./agent'),
 	THREE = require('three'),
 	_ = require('underscore');
 
-var Sim = function() {
+var Sim = function(id) {
 
 	var agents = {};
 
+	this.id = id;
 	this.max_agents = 10;
 
 	this.addAgent = function(id) {
 		if (_.size(agents) < this.max_agents) {
 			if (agents[id] == undefined) {
-				agents[id] = new Agent();
+				agents[id] = new Agent(id);
 				return agents[id];
 			} else {
 				return null;
@@ -21,7 +22,7 @@ var Sim = function() {
 		}
 	}
 
-	this.deleteAgent = function(id) {
+	this.removeAgent = function(id) {
 		if (agents[id]) {
 			agents = _.without(agents, id);
 		}
@@ -36,6 +37,7 @@ var Sim = function() {
 	}
 
 	this.translateAgent = function(id, x, y, z) {
+		console.log((new Date()) + " Moving User: ..." + id.slice(-5) + " --> in Room: ..." + this.id.slice(-5));
 		if (agents[id]) {
 			agents[id].translateX(x);
 			agents[id].translateY(y);

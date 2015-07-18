@@ -7,20 +7,21 @@ const Sim = require('./../src/sim'),
 
 var Room = function() {
 
-	this.id = 'lid_' + NSA.random(25);
+	this.id = 'rid_' + NSA.random(25);
 	this.users = {};
 	this.max_users = 10;
-
-	var _sim = new Sim();
-	var messageHandler = function(id, args) {
-		this.users[id].sendMessage(args);
-	}.bind(this);
+	this.Sim = new Sim(this.id);
 
 	var receiveMessage = function(msg) {
+		// console.log(msg.event, msg);
 		if (msg.event == "close") {
 			this.removeUser(msg.data.id);
-		} else {
-
+			this.Sim.removeAgent(msg.websocket_id);
+		} else if (msg.event == "translate") {
+			this.Sim.translateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
+		} else if (msg.event == "leaving") {
+			this.Sim.removeAgent(msg.websocket_id);
+			this.users[msg.websocket_id].ws.close();
 		}
 	}.bind(this);
 
@@ -29,12 +30,12 @@ var Room = function() {
 			if (this.users[connection.id] == undefined) {
 
 				this.users[connection.id] = connection;
+				this.Sim.addAgent(connection.id);
 
-				_sim.addAgent(connection.id);
-
-				connection.channelToConnection = new Channel(messageHandler);
+				connection.channelToConnection = new Channel(connection.receiveMessage);
 				connection.channelToRoom = new Channel(receiveMessage);
-				console.log(_.keys(this.users));
+				// console.log(connection.channelToRoom);
+				console.log("Users in Room: ..." + this.id.slice(-5), _.keys(this.users));
 				return this.users[connection.id];
 			} else {
 				return null;
@@ -46,7 +47,9 @@ var Room = function() {
 
 	this.excuseUser = function(id, reason) {
 		if (this.users[id]) {
-			this.users[id].disconnect(reason);
+			this.users[id].receiveMessage({
+				event: "disconnected"
+			});
 			return this.removeUser(this.users[id]);
 		} else {
 			return null;
@@ -88,15 +91,18 @@ var Lobby = function() {
 	this.rooms = {};
 }
 
-Lobby.prototype.addRoom = function() {
+Lobby.prototype.addRoom = function(room) {
 	if (_.size(this.rooms) < this.max_rooms) {
-		var room_id = 'rid_' + NSA.random(25);
-		this.rooms[room_id] = new Room(room_id);
-		return this.rooms[room_id];
+		this.rooms[room.id] = room;
+		return this.rooms[room.id];
 	} else {
 		return null;
 	}
 };
+
+Lobby.prototype.getRoom = function(room_id) {
+	return this.rooms[room_id];
+}
 
 Lobby.prototype.deleteRoom = function(id, reason) {
 	var num_rooms = _.size(this.rooms);

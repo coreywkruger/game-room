@@ -8,39 +8,40 @@ var Router = function(ws) {
 
 	var Rooms = {};
 	var WebSocketServer = new WSS();
-	var Lobby = new World.Lobby();
+	this.Lobby = new World.Lobby();
 
-	for (var i = 0; i < Lobby.max_rooms; i++) {
-		var new_room = new World.Room();
-		Rooms[new_room.id] = new_room;
+	for (var i = 0; i < this.Lobby.max_rooms; i++) {
+		this.Lobby.addRoom(new World.Room());
 	}
 
 	WebSocketServer.onConnection(function(connection) {
 		console.log("new connection: ", connection.id);
-		connection.onMessage(function(message) {
-
+		connection.initMessage(function(message) {
+			// console.log(message);
 			if (connection.room_id == undefined) {
 
 				if (message.event == "rooming" && message.data.room_id) {
 					connection.room_id = message.data.room_id;
-					if (Rooms[connection.room_id]) {
-						Rooms[connection.room_id].assignUser(connection);
+					if (this.Lobby.getRoom(connection.room_id)) {
+						this.Lobby.getRoom(connection.room_id).assignUser(connection);
+						connection.channelToConnection.sendMessage({
+							event: "room_selected",
+							data: {
+								room_id: connection.room_id
+							},
+							websocket_id: connection.id
+						})
 					}
+				} else {
+					connection.ws.send(serialize({
+						event: "initialized",
+						data: {},
+						websocket_id: connection.id
+					}));
 				}
-
-			} else {
-
 			}
-		});
-
-		connection.sendMessage({
-			event: "initialized",
-			data: {
-				rooms: _.keys(Rooms)
-			},
-			websocket_id: connection.id
-		});
-	});
+		}.bind(this));
+	}.bind(this));
 }
 
 function deserialize(message) {

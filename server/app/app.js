@@ -31,7 +31,7 @@ var App = function() {
 	});
 
 	// Attach Routers
-	this.app.use('/', require('../config/router_public'));
+	this.app.use('/v1/', require('../config/router_public'));
 	// this.app.use('/', require('../config/router_ws'));
 	// this.app.use(Authenticator);
 	// this.app.use('/v1/', require('../config/routing/http_router_private'));

@@ -33,19 +33,19 @@ gulp.task('clean', function() {
 // Watch and rebuild JavaScript and Stylesheets.
 gulp.task('default', ['clean', 'templates', 'js', 'css', 'serve'], function() {
 	console.log('Watching development files...');
-	gulp.watch(['partials/**/*.html'], ['templates']);
+	gulp.watch(['src/partials/**/*.html'], ['templates']);
 	gulp.watch(['../dist/js/**/*.js', 'src/js/**/*.js'], ['js']);
 	// gulp.watch(['src/css/**/*'], ['css']);
 });
 
-// Compile templates.
+// Templates
 gulp.task('templates', function() {
-	return gulp.src('partials/**/*.html')
+	return gulp.src('src/partials/**/*.html')
 		.pipe(templateCache({
-			root: '/templates/',
+			root: '/partials/',
 			standalone: true
 		}))
-		.pipe(gulp.dest('src/js'));
+		.pipe(gulp.dest('src/js/'));
 });
 
 // Build fonts.

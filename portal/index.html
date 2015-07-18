@@ -12,32 +12,15 @@
     <script src="dist/js/all.min.js"></script>
   </head>
   <body id="" ng-app="game">
-    <div>
-      <div id="myCanvas" width="500" height="500"></div>
+    <div class="container-fluid">
+      <br>
+      <div class="row">
+        <div class="text-center col-md-12">
+            <h2 class="">Connected == {{websockets_connected || false}}&nbsp;<br><br>
+        </div>
+      </div>
     </div>
-    
-    <!-- <script src="/socket.io/socket.io.js"></script>-->
-    <!-- <script>
-      // var socket = io.connect('http://localhost:8000');
-
-      // setTimeout(function(){
-
-      //   socket.emit('move', {position: {x: 1, y:1, z:1}});
-      // }, 100);
-      
-
-      // socket.on('update_player_list', function (data) {
-      //   console.log(data);
-      //   // socket.emit('my other event', { my: 'data' });
-      // });
-
-
-      // var i = 0;
-      // setInterval(function(){
-      //   socket.emit('my other event', { my: i });
-      //   i++;
-      //   i %= 50;
-      // }, 10);
-    </script> -->
+    <ui-view></ui-view>
+    <div id="myCanvas" width="500" height="500"></div>
   </body>
 </html>
