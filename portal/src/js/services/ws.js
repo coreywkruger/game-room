@@ -1,8 +1,8 @@
 var controlServices = angular.module('websocketServices', ['restangularServices', 'configServices']);
 
-controlServices.factory('websocketService', ["$q", "restangularService", "configService",
+controlServices.factory('websocketService', ["$q", "$rootScope", "restangularService", "configService",
 
-	function($q, restangularService, configService) {
+	function($q, $rootScope, restangularService, configService) {
 		return new function() {
 
 			this.api = restangularService.one("room");
@@ -11,7 +11,7 @@ controlServices.factory('websocketService', ["$q", "restangularService", "config
 			this.index = 10000000000;
 			this.websocket_id;
 			this.rooms = [];
-			this.websockets_connected = false;
+			$rootScope.websockets_connected = false;
 
 			this.acquireRoomIds = function() {
 				var promise = this.api.get();
@@ -21,23 +21,24 @@ controlServices.factory('websocketService', ["$q", "restangularService", "config
 				return promise;
 			};
 
-			this.open = function(cb) {
+			this.open = function(room_id, cb) {
 				this.socket = new WebSocket(configService.websocket_host);
 				this.socket.onopen = function() {
 					if (this.socket.bufferedAmount == 0) {
-						this.sendMessage("connected", {});
-						this.websockets_connected = true;
+						this.sendMessage("rooming", {
+							room_id: room_id
+						});
+						$rootScope.websockets_connected = true;
 						cb();
 					}
 				}.bind(this);
 			};
 
-			this.resart = function() {
+			this.close = function() {
 				this.socket.close();
 				this.socket = undefined;
 				this.websocket_id = undefined;
 				this.room_ids = [];
-				this.init();
 			};
 
 			this.addEvent = function(event, cb) {
@@ -52,17 +53,17 @@ controlServices.factory('websocketService', ["$q", "restangularService", "config
 				console.log('listening');
 				this.socket.onmessage = function(event) {
 					var msg = deserialize(event.data);
-					if (this.websocket_id) {
-						if (this.websocket_id == msg.websocket_id) {
-							if (this.events[msg.event]) {
-								this.events[msg.event](msg);
-							}
+					console.log(this.websocket_id, msg);
+
+					if (msg.event == "room_selected") {
+						this.websocket_id = msg.websocket_id;
+						if (this.events[msg.event]) {
+							this.events[msg.event](msg);
 						}
 					} else {
-						this.websocket_id = msg.websocket_id;
-						this.room_ids = msg.data.rooms;
-						this.roomIdPromise.resolve(this.room_ids);
-						this.userIdPromise.resolve(this.websocket_id);
+						if (this.websocket_id == msg.websocket_id) {
+							this.events[msg.event](msg);
+						}
 					}
 				}.bind(this);
 			};
@@ -89,6 +90,15 @@ controlServices.factory('websocketService', ["$q", "restangularService", "config
 					"api-key": this.api_key,
 					"websocket_id": this.websocket_id
 				}));
+			};
+
+			this.leaveRoom = function(cb) {
+				this.sendMessage("disconnect", {});
+				if (cb) cb();
+			};
+
+			this.isConnected = function() {
+				return $rootScope.websockets_connected;
 			};
 
 			function deserialize(data) {

@@ -15,32 +15,7 @@ var Router = function(ws) {
 	}
 
 	WebSocketServer.onConnection(function(connection) {
-		console.log("new connection: ", connection.id);
-		connection.initMessage(function(message) {
-			// console.log(message);
-			if (connection.room_id == undefined) {
-
-				if (message.event == "rooming" && message.data.room_id) {
-					connection.room_id = message.data.room_id;
-					if (this.Lobby.getRoom(connection.room_id)) {
-						this.Lobby.getRoom(connection.room_id).assignUser(connection);
-						connection.channelToConnection.sendMessage({
-							event: "room_selected",
-							data: {
-								room_id: connection.room_id
-							},
-							websocket_id: connection.id
-						})
-					}
-				} else {
-					connection.ws.send(serialize({
-						event: "initialized",
-						data: {},
-						websocket_id: connection.id
-					}));
-				}
-			}
-		}.bind(this));
+		this.Lobby.waitingRoom(connection)
 	}.bind(this));
 }
 

@@ -28,16 +28,17 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService',
 	function($state, $rootScope, websocketService, parallelKeyService) {
 
 		websocketService.addEvent("room_selected", function(msg) {
+			console.log("New Room: ", msg);
 			websocketService.currentRoomId = msg.data.room_id;
 			websocketService.currentRoomIdPromise.resolve(websocketService.currentRoomId);
 		});
 
-		websocketService.addEvent("disconnected", function(msg) {
-			// websocketService.restart();
-			// websocketService.socket.close();
-			websocketService.open();
-			websocketService.listen();
-		});
+		// websocketService.addEvent("disconnected", function(msg) {
+		// 	// websocketService.restart();
+		// 	// websocketService.socket.close();
+		// 	websocketService.open();
+		// 	websocketService.listen();
+		// });
 
 		parallelKeyService.setFun("68" /*d*/ , function() {
 			// console.log("d");

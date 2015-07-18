@@ -3,26 +3,29 @@ const Sim = require('./../src/sim'),
 	NSA = require('./nsa'),
 	Connection = require('./connection'),
 	Channel = require('./channel'),
+	// M = require('./../lib/messages'),
 	_ = require('underscore');
 
 var Room = function() {
 
-	this.id = 'rid_' + NSA.random(25);
+	this.id = 'rid_' + NSA.random(10);
 	this.users = {};
 	this.max_users = 10;
 	this.Sim = new Sim(this.id);
 
 	var receiveMessage = function(msg) {
-		// console.log(msg.event, msg);
-		if (msg.event == "close") {
+		console.log('Received Message: ', msg.event);
+		if (msg.event == "disconnect") {
 			this.removeUser(msg.data.id);
-			this.Sim.removeAgent(msg.websocket_id);
 		} else if (msg.event == "translate") {
 			this.Sim.translateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
-		} else if (msg.event == "leaving") {
-			this.Sim.removeAgent(msg.websocket_id);
-			this.users[msg.websocket_id].ws.close();
+		} else if (msg.event == "excuse_me") {
+			this.removeUser(msg.data.id);
 		}
+	}.bind(this);
+
+	var cleanupLoop = function() {
+
 	}.bind(this);
 
 	this.assignUser = function(connection) {
@@ -36,28 +39,23 @@ var Room = function() {
 				connection.channelToRoom = new Channel(receiveMessage);
 				// console.log(connection.channelToRoom);
 				console.log("Users in Room: ..." + this.id.slice(-5), _.keys(this.users));
-				return this.users[connection.id];
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
 
-	this.excuseUser = function(id, reason) {
-		if (this.users[id]) {
-			this.users[id].receiveMessage({
-				event: "disconnected"
-			});
-			return this.removeUser(this.users[id]);
-		} else {
-			return null;
+				connection.channelToConnection.sendMessage({
+					event: "room_selected",
+					data: {
+						room_id: connection.room_id
+					},
+					websocket_id: connection.id
+				});
+				return this.users[connection.id];
+			}
 		}
 	}
 
 	this.removeUser = function(id, reason) {
 		if (this.users[id]) {
+			this.Sim.removeAgent(id);
+			this.users[id].ws.close();
 			delete this.users[id];
 			return id;
 		} else {
@@ -86,10 +84,32 @@ Room.prototype.close = function(reason) {
 }
 
 var Lobby = function() {
-	this.id = 'lid_' + NSA.random(25);
+	this.id = 'lid_' + NSA.random(10);
 	this.max_rooms = 10;
 	this.rooms = {};
+	this.waiting = {};
+
+	var loop = function() {
+		if (_.size(this.waiting) > 0) {
+			console.log("Waiters exist..");
+			for (var key in this.waiting) {
+				var room_id = this.waiting[key].room_id;
+				if (room_id && !this.waiting[key].assigned) {
+					console.log("ASSIGNED!");
+					this.rooms[room_id].assignUser(this.waiting[key]);
+					delete this.waiting[key];
+				}
+			}
+		}
+	}.bind(this);
+
+	setInterval(loop, 1000);
 }
+
+Lobby.prototype.waitingRoom = function(connection, room_id) {
+	this.waiting[connection.id] = connection;
+	console.log(_.size(this.waiting) + " users waiting");
+};
 
 Lobby.prototype.addRoom = function(room) {
 	if (_.size(this.rooms) < this.max_rooms) {

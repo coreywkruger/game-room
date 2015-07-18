@@ -1,17 +1,17 @@
 <div class="container">
-	<div class="row">
+	<!-- <div class="row">
         <div class="text-center col-md-12">
-            <button type="" ng-click="open()" class="btn btn-primary btn-lg">Connect!</button></h2>
+            <button type="" ng-click="openClose()" class="btn btn-primary btn-lg">{{websockets_connected ? "Disconnect" : "Connect!"}}</button></h2>
         </div>
-  	</div><br>
+  	</div><br> -->
 	<div class="row">
-		<h3>You are User: {{id}}</h3>
+		<h3>You are User: {{id}} ({{websockets_connected ? "Connected!" : "Not Connected"}})</h3>
 	</div><br>
 	<div class="row">
 		<form class="form-group">
 			<div ng-repeat="room in room_ids">
 				<div class="col-md-6">
-					<button type="" ng-click="goToRoom(room)" class="form-control btn btn-default">{{room}}</button>
+					<button type="" ng-click="open(room)" class="form-control btn btn-default">{{room}}</button>
 				</div>
 			</div>
 		</form>

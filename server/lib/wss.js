@@ -23,7 +23,7 @@ var WSS = function() {
 	};
 
 	this.server.on('connection', function connection(ws) {
-		var connection_id = 'cid_' + NSA.random(25);
+		var connection_id = 'cid_' + NSA.random(10);
 		var new_connection = new Connection(connection_id, ws);
 
 		this.connections[connection_id] = new_connection;
