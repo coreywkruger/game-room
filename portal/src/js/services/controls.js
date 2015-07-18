@@ -1,68 +1,57 @@
 var controlServices = angular.module('controlServices', []);
 
-controlServices.factory('controlService', [
+controlServices.factory('parallelKeyService', [
 
 	function() {
 		return new function() {
 
-			this.startControls = function(scope, object, functions, cb) {
+			this.funs = {};
+			this.codes = {};
 
-				var map = []; // Or you could call it "key"
-				var onkeydown = keyfun;
-				var onkeyup = keyfun;
+			this.setFun = function(key, cb) {
+				this.funs[key] = cb;
+			}.bind(this);
 
-				function keyfun(e) {
-					e = e || event; // to deal with IE
-					map[e.keyCode] = e.type == 'keydown';
+			var is_empty = function() {
+				for (var key in this.codes) {
+					if (this.codes[key]) return false;
 				}
+				return true;
+			}.bind(this);
 
-				scope.going = {
-					val: false
-				};
+			var exec_funs = function() {
+				for (var key in this.codes) {
+					if (this.codes[key]) {
+						this.funs[key]();
+					}
+				}
+			}.bind(this);
+
+			this.going = {
+				val: false
+			};
+
+			this.startControls = function() {
 
 				$(window).on('keydown', function(event) {
-
-					keyfun(event);
-					scope.going.val = true;
-					scope.$apply();
-				});
+					this.codes[event.keyCode] = (event.type == 'keydown');
+					this.going.val = true;
+					// this.$apply();
+				}.bind(this));
 
 				$(window).on('keyup', function(event, a, b) {
-
-					keyfun(event);
+					this.codes[event.keyCode] = (event.type == 'keydown');
 					if (is_empty()) {
-						scope.going.val = false;
-						scope.$apply();
+						this.going.val = false;
+						// this.$apply();
 					}
-				});
+				}.bind(this));
 
 				setInterval(function() {
-					if (scope.going.val) {
-						exec_funs(map, object, functions);
+					if (this.going.val) {
+						exec_funs();
 					}
-				}, 1);
-
-				function is_empty() {
-					for (var key in map) {
-						if (map[key]) return false;
-					}
-					return true;
-				}
-
-				function exec_funs(codes, obj, funs) {
-
-					for (var key in codes) {
-						if (key == "68" && codes[key]) { // d
-							funs[0](obj, cb);
-						} else if (key == "83" && codes[key]) { // s
-							funs[1](obj, cb);
-						} else if (key == "65" && codes[key]) { // a
-							funs[2](obj, cb);
-						} else if (key == "87" && codes[key]) { // w
-							funs[3](obj, cb);
-						}
-					}
-				}
+				}.bind(this), 1);
 			};
 		}
 	}

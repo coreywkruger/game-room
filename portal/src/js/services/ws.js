@@ -44,8 +44,6 @@ controlServices.factory('websocketService', ["$q",
 				console.log('listening');
 				this.socket.onmessage = function(event) {
 					var msg = deserialize(event.data);
-
-					console.log('||'.msg);
 					if (this.websocket_id) {
 						if (this.websocket_id == msg.websocket_id) {
 							if (this.events[msg.event]) {
