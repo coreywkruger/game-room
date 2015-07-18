@@ -27,11 +27,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService',
 	function($state, $rootScope, websocketService, parallelKeyService) {
 
-		websocketService.addEvent("room_selected", function(msg) {
-			console.log("New Room: ", msg);
-			websocketService.currentRoomId = msg.data.room_id;
-			websocketService.currentRoomIdPromise.resolve(websocketService.currentRoomId);
-		});
+		// websocketService.addEvent("room_selected", function(msg) {
+		// console.log("New Room: ", msg);
+
+		// websocketService.currentRoomId = msg.data.room_id;
+		// websocketService.currentRoomIdPromise.resolve(websocketService.currentRoomId);
+		// });
 
 		// websocketService.addEvent("disconnected", function(msg) {
 		// 	// websocketService.restart();

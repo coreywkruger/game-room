@@ -53,10 +53,13 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 				console.log('listening');
 				this.socket.onmessage = function(event) {
 					var msg = deserialize(event.data);
-					console.log(this.websocket_id, msg);
-
+					console.log(msg);
 					if (msg.event == "room_selected") {
 						this.websocket_id = msg.websocket_id;
+						$rootScope.websocket_id = this.websocket_id;
+						$rootScope.room_id = msg.data.room_id;
+						$rootScope.$apply();
+						// this.userIdPromise.resolve(this.websocket_id);
 						if (this.events[msg.event]) {
 							this.events[msg.event](msg);
 						}
@@ -73,15 +76,15 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 				return this.roomIdPromise.promise;
 			};
 
-			this.currentRoomIdPromise = $q.defer();
-			this.getCurrentRoomId = function() {
-				return this.currentRoomIdPromise.promise;
-			};
+			// this.currentRoomIdPromise = $q.defer();
+			// this.getCurrentRoomId = function() {
+			// 	return this.currentRoomIdPromise.promise;
+			// };
 
-			this.userIdPromise = $q.defer();
-			this.getUserId = function() {
-				return this.userIdPromise.promise;
-			};
+			// this.userIdPromise = $q.defer();
+			// this.getUserId = function() {
+			// 	return this.userIdPromise.promise;
+			// };
 
 			this.sendMessage = function(event, args) {
 				this.socket.send(JSON.stringify({
@@ -94,6 +97,9 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 
 			this.leaveRoom = function(cb) {
 				this.sendMessage("disconnect", {});
+				$rootScope.websocket_id = "";
+				$rootScope.room_id = "";
+				$rootScope.websockets_connected = false;
 				if (cb) cb();
 			};
 

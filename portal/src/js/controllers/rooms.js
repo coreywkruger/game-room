@@ -8,22 +8,30 @@ roomControllers.controller('roomListController', ['$scope', '$state', 'websocket
 			$scope.room_ids = websocketService.room_ids;
 		});
 
-		websocketService.getUserId().then(function(res) {
-			$scope.id = websocketService.websocket_id;
-		});
+
+
+		// websocketService.getUserId().then(function(res) {
+		// 	$scope.id = websocketService.websocket_id;
+		// });
 
 		$scope.goToRoom = function(room_id) {
 			console.log("Connecting to: ", room_id);
 			websocketService.sendMessage("rooming", {
 				room_id: room_id
 			});
-			websocketService.getCurrentRoomId().then(function(res) {
-				$scope.current_room = websocketService.currentRoomId;
-			});
+			// websocketService.getCurrentRoomId().then(function(res) {
+			// 	console.log(res.data);
+			// 	$scope.current_room = websocketService.currentRoomId;
+			// });
+			// websocketService.getUserId().then(function(res) {
+			// 	console.log(res.data);
+			// 	$scope.id = websocketService.websocket_id;
+			// });
 		};
 
 		$scope.leaveRoom = function() {
 			$scope.current_room = "";
+			$scope.id = "";
 			websocketService.leaveRoom(function() {
 				console.log("CLOSING");
 				websocketService.close();
@@ -37,9 +45,10 @@ roomControllers.controller('roomListController', ['$scope', '$state', 'websocket
 		};
 
 		$scope.open = function(room_id) {
-			websocketService.open(room_id, function() {
+			websocketService.open(room_id, function(id) {
 				websocketService.listen();
-				console.log("OPENED")
+				console.log("OPENED");
+				console.log('++', websocketService.websocket_id);
 				$scope.$apply()
 			});
 		};
