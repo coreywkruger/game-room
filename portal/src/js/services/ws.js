@@ -63,6 +63,10 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 						if (this.events[msg.event]) {
 							this.events[msg.event](msg);
 						}
+
+						this.sendMessage("scene_load", {
+							room_id: $rootScope.room_id
+						});
 					} else {
 						if (this.websocket_id == msg.websocket_id) {
 							this.events[msg.event](msg);
@@ -75,16 +79,6 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 			this.getRoomIds = function() {
 				return this.roomIdPromise.promise;
 			};
-
-			// this.currentRoomIdPromise = $q.defer();
-			// this.getCurrentRoomId = function() {
-			// 	return this.currentRoomIdPromise.promise;
-			// };
-
-			// this.userIdPromise = $q.defer();
-			// this.getUserId = function() {
-			// 	return this.userIdPromise.promise;
-			// };
 
 			this.sendMessage = function(event, args) {
 				this.socket.send(JSON.stringify({

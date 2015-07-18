@@ -67,9 +67,9 @@ var threejs_canvas = angular.module('canvasMods', ['sceneServices', 'controlServ
 // 				mainSvc.setRenderer();
 // 				element.append(mainSvc.getElement());
 
-// 				setInterval(function() {
-// 					mainSvc.render();
-// 				}, 40);
+// setInterval(function() {
+// 	mainSvc.render();
+// }, 40);
 
 // 				function rotate_left(ob, cb) {
 // 					ob.rotation.y += Math.PI / 460;

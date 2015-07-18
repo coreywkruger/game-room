@@ -24,22 +24,33 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 	}
 ]);
 
-app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService',
-	function($state, $rootScope, websocketService, parallelKeyService) {
+app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'sceneService',
+	function($state, $rootScope, websocketService, parallelKeyService, sceneService) {
 
-		// websocketService.addEvent("room_selected", function(msg) {
-		// console.log("New Room: ", msg);
+		websocketService.addEvent("scene_load", function(msg) {
+			for (var i = 0; i < msg.data.users.length; i++) {
+				if (msg.data.users[i] !== websocketService.websocket_id) {
+					sceneService.createAgent(msg.data.users[i]);
+				}
+			}
+			sceneService.createAgent(websocket_id, true);
+			sceneService.newScene();
+			sceneService.setRenderer();
+			$("#Screen1").append(sceneService.getElement());
+			setInterval(function() {
+				sceneService.render();
+			}, 40);
+		});
 
-		// websocketService.currentRoomId = msg.data.room_id;
-		// websocketService.currentRoomIdPromise.resolve(websocketService.currentRoomId);
-		// });
+		websocketService.addEvent("scene_add_player", function(msg) {
 
-		// websocketService.addEvent("disconnected", function(msg) {
-		// 	// websocketService.restart();
-		// 	// websocketService.socket.close();
-		// 	websocketService.open();
-		// 	websocketService.listen();
-		// });
+		});
+
+		websocketService.addEvent("scene_updated", function(msg) {
+
+		});
+
+
 
 		parallelKeyService.setFun("68" /*d*/ , function() {
 			// console.log("d");

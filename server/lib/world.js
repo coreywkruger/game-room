@@ -21,6 +21,8 @@ var Room = function() {
 			this.Sim.translateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
 		} else if (msg.event == "excuse_me") {
 			this.removeUser(msg.data.id);
+		} else if (msg.event == "scene_load") {
+			this.users[msg.websocket_id].channelToConnection.sendMessage(this.Sim.getAgents());
 		}
 	}.bind(this);
 
