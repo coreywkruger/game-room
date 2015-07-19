@@ -6,11 +6,11 @@ var Connection = function(id, ws) {
 	this.ws = ws;
 	this.room_id;
 	this.message_buffer = [];
-	this.channelToConnection;
-	this.channelToRoom;
 	this.assigned = false;
 
 	console.log("New Connection: ", this.id);
+
+	var _onMessage = function() {};
 
 	this.ws.on('message', function(message) {
 
@@ -19,45 +19,38 @@ var Connection = function(id, ws) {
 
 		if (msg.event == "rooming" && this.room_id == undefined) {
 			this.room_id = msg.data.room_id;
+			_onRoomChoice(this.room_id);
 		}
 
-		if (this.channelToRoom) {
-			this.channelToRoom.sendMessage(msg);
+		if (_onMessage) {
+			_onMessage(msg);
 		}
 	}.bind(this));
-
-	var loop = function() {
-		if (this.message_buffer.length > 0) {
-			var msg = this.popMessage();
-			console.log("Conn Sending Message: ", msg.event);
-			this.ws.send(serialize(msg));
-		}
-	}.bind(this);
-
-	setInterval(loop, 1);
 
 	this.ws.on('close', function() {
 		console.log("Connection Closed: ", this.id);
 		// this.disconnect(this.id);
 		if (this.room_id) {
-			this.channelToRoom.sendMessage({
+			_onMessage({
 				event: 'excuse_me',
 				data: {
 					id: this.id
 				}
 			});
 		}
-		clearInterval(loop);
 	}.bind(this));
 
-	this.receiveMessage = function(args) {
-		this.message_buffer.push(args);
-	}.bind(this);
-
-	this.popMessage = function() {
-		var msg = this.message_buffer.pop();
-		return msg;
+	this.onMessage = function(cb) {
+		_onMessage = cb;
 	}
+
+	this.onRoomChoice = function(cb) {
+		_onRoomChoice = cb;
+	}
+
+	this.sendMessage = function(msg) {
+		this.ws.send(serialize(msg));
+	}.bind(this);
 }
 
 function deserialize(message) {

@@ -27,13 +27,18 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'sceneService',
 	function($state, $rootScope, websocketService, parallelKeyService, sceneService) {
 
+		sceneService.newScene();
+
 		websocketService.addEvent("scene_load", function(msg) {
-			for (var i = 0; i < msg.data.users.length; i++) {
-				if (msg.data.users[i] !== websocketService.websocket_id) {
-					sceneService.createAgent(msg.data.users[i]);
+
+			var agents = _.keys(msg.data.agents);
+
+			for (var i = 0; i < agents.length; i++) {
+				if (agents[i] !== websocketService.websocket_id) {
+					sceneService.createAgent(agents[i]);
 				}
 			}
-			sceneService.createAgent(websocket_id, true);
+			sceneService.createAgent(websocketService.websocket_id, true);
 			sceneService.newScene();
 			sceneService.setRenderer();
 			$("#Screen1").append(sceneService.getElement());
@@ -43,51 +48,52 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 		});
 
 		websocketService.addEvent("scene_add_player", function(msg) {
-
+			console.log('====', msg);
 		});
 
 		websocketService.addEvent("scene_updated", function(msg) {
 
 		});
 
+		parallelKeyService.setFun("83" /*s*/ , function() {
+			sceneService.move_backward(sceneService.agent, function() {
+				websocketService.sendMessage("translate", {
+					x: sceneService.agent.position.x,
+					y: sceneService.agent.position.y,
+					z: sceneService.agent.position.z
+				});
+			});
+		});
 
+		parallelKeyService.setFun("87" /*w*/ , function() {
+			sceneService.move_forward(sceneService.agent, function() {
+				websocketService.sendMessage("translate", {
+					x: sceneService.agent.position.x,
+					y: sceneService.agent.position.y,
+					z: sceneService.agent.position.z
+				});
+			});
+		});
 
 		parallelKeyService.setFun("68" /*d*/ , function() {
-			// console.log("d");
-			websocketService.sendMessage("translate", {
-				"key": "d",
-				"x": "1",
-				"y": "2",
-				"z": "3"
-			})
-		});
-		parallelKeyService.setFun("83" /*s*/ , function() {
-			// console.log("s");
-			websocketService.sendMessage("translate", {
-				"key": "s",
-				"x": "1",
-				"y": "2",
-				"z": "3"
-			})
+			sceneService.rotate_right(sceneService.agent, function() {
+				websocketService.sendMessage("rotate", {
+					x: sceneService.agent.rotation.x,
+					y: sceneService.agent.rotation.y,
+					z: sceneService.agent.rotation.z
+				});
+			});
 		});
 		parallelKeyService.setFun("65" /*a*/ , function() {
-			// console.log("a");
-			websocketService.sendMessage("translate", {
-				"key": "a",
-				"x": "1",
-				"y": "2",
-				"z": "3"
-			})
+			sceneService.rotate_left(sceneService.agent, function() {
+				websocketService.sendMessage("rotate", {
+					x: sceneService.agent.rotation.x,
+					y: sceneService.agent.rotation.y,
+					z: sceneService.agent.rotation.z
+				});
+			});
 		});
-		parallelKeyService.setFun("87" /*w*/ , function() {
-			// console.log("w");
-			websocketService.sendMessage("translate", {
-				"key": "w",
-				"x": "1",
-				"y": "2",
-				"z": "3"
-			})
-		});
+
 		parallelKeyService.startControls();
 	}
 ]);

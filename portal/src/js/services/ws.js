@@ -53,7 +53,7 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 				console.log('listening');
 				this.socket.onmessage = function(event) {
 					var msg = deserialize(event.data);
-					console.log(msg);
+					console.log("Received Message: ", msg);
 					if (msg.event == "room_selected") {
 						this.websocket_id = msg.websocket_id;
 						$rootScope.websocket_id = this.websocket_id;

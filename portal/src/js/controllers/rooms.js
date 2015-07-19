@@ -48,7 +48,6 @@ roomControllers.controller('roomListController', ['$scope', '$state', 'websocket
 			websocketService.open(room_id, function(id) {
 				websocketService.listen();
 				console.log("OPENED");
-				console.log('++', websocketService.websocket_id);
 				$scope.$apply()
 			});
 		};

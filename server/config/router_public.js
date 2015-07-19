@@ -36,7 +36,7 @@ router.get('/room', function(req, res, next) {
 	});
 });
 
-router.get('/room/:id', function(req, res, next) {
+router.post('/room/:id', function(req, res, next) {
 	console.log("get room", req.params.id);
 });
 

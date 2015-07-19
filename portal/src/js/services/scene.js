@@ -34,11 +34,11 @@ sceneServices.factory('sceneService', [
 				);
 			};
 
-			this.moveObject = function(id, data) {
+			this.translateObject = function(id, data) {
 				var ob = _self.getObject(id);
-				ob.position.x = data.x;
-				ob.position.y = data.y;
-				ob.position.z = data.z;
+				ob.position.x = data.x ? data.x : ob.position.x;
+				ob.position.y = data.y ? data.y : ob.position.y;
+				ob.position.z = data.z ? data.z : ob.position.z;
 				return ob;
 			};
 
@@ -59,7 +59,7 @@ sceneServices.factory('sceneService', [
 
 				var cube = new THREE.Mesh(geometry, material);
 
-				cube.name = id;
+				cube.id = id;
 				cube.position.x += 2000;
 				cube.position.z += 2000;
 
@@ -88,10 +88,11 @@ sceneServices.factory('sceneService', [
 
 			this.getObject = function(id) {
 				for (var i = 0; i < _self.mainScene.children.length; i++) { // console.log(_self.mainScene.children[i].name, id);
-					if (_self.mainScene.children[i].name == id) {
+					if (_self.mainScene.children[i].id == id) {
 						return _self.mainScene.children[i];
 					}
 				}
+				console.log("JLKJDFSL:FKL:DFKLS:DFKLS:KL:FKL:FDKL:");
 				return undefined;
 			};
 
@@ -109,6 +110,31 @@ sceneServices.factory('sceneService', [
 					wireframe: true
 				});
 			};
+
+
+			this.rotate_left = function(ob, cb) {
+				ob.rotation.y += Math.PI / 460;
+				cb();
+			}
+
+			this.rotate_right = function(ob, cb) {
+				ob.rotation.y -= Math.PI / 460;
+				cb();
+			}
+
+			this.move_forward = function(ob, cb) {
+				var els = ob.matrix.elements;
+				var v = new THREE.Vector3(els[8], els[9], els[10]);
+				ob.position.add(v.clone().setLength(-300));
+				cb();
+			}
+
+			this.move_backward = function(ob, cb) {
+				var els = ob.matrix.elements;
+				var v = new THREE.Vector3(els[8], els[9], els[10]);
+				ob.position.add(v.clone().setLength(300));
+				cb();
+			}
 		}
 	}
 ]);

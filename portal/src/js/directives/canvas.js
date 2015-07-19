@@ -71,29 +71,29 @@ var threejs_canvas = angular.module('canvasMods', ['sceneServices', 'controlServ
 // 	mainSvc.render();
 // }, 40);
 
-// 				function rotate_left(ob, cb) {
-// 					ob.rotation.y += Math.PI / 460;
-// 					cb();
-// 				}
+// function rotate_left(ob, cb) {
+// 	ob.rotation.y += Math.PI / 460;
+// 	cb();
+// }
 
-// 				function rotate_right(ob, cb) {
-// 					ob.rotation.y -= Math.PI / 460;
-// 					cb();
-// 				}
+// function rotate_right(ob, cb) {
+// 	ob.rotation.y -= Math.PI / 460;
+// 	cb();
+// }
 
-// 				function move_forward(ob, cb) {
-// 					var els = ob.matrix.elements;
-// 					var v = new THREE.Vector3(els[8], els[9], els[10]);
-// 					ob.position.add(v.clone().setLength(-300));
-// 					cb();
-// 				}
+// function move_forward(ob, cb) {
+// 	var els = ob.matrix.elements;
+// 	var v = new THREE.Vector3(els[8], els[9], els[10]);
+// 	ob.position.add(v.clone().setLength(-300));
+// 	cb();
+// }
 
-// 				function move_backward(ob, cb) {
-// 					var els = ob.matrix.elements;
-// 					var v = new THREE.Vector3(els[8], els[9], els[10]);
-// 					ob.position.add(v.clone().setLength(300));
-// 					cb();
-// 				}
+// function move_backward(ob, cb) {
+// 	var els = ob.matrix.elements;
+// 	var v = new THREE.Vector3(els[8], els[9], els[10]);
+// 	ob.position.add(v.clone().setLength(300));
+// 	cb();
+// }
 
 // 				function update() {
 // 					mainSvc.render();

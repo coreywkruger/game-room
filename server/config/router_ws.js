@@ -8,6 +8,7 @@ var Router = function(ws) {
 
 	var Rooms = {};
 	var WebSocketServer = new WSS();
+
 	this.Lobby = new World.Lobby();
 
 	for (var i = 0; i < this.Lobby.max_rooms; i++) {
@@ -15,7 +16,9 @@ var Router = function(ws) {
 	}
 
 	WebSocketServer.onConnection(function(connection) {
-		this.Lobby.waitingRoom(connection)
+		connection.onRoomChoice(function(room_id) {
+			this.Lobby.rooms[room_id].assignUser(connection);
+		}.bind(this));
 	}.bind(this));
 }
 
