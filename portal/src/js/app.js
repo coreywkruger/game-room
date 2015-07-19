@@ -1,5 +1,5 @@
 var app = angular.module('game', [
-	'canvasMods',
+	// 'canvasMods',
 	'sceneServices',
 	'controlServices',
 	'websocketServices',
@@ -14,12 +14,28 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 		// use the HTML5 History API
 		// $locationProvider.html5Mode(true);
 		// $httpProvider.interceptors.push('');
+		$urlRouterProvider.otherwise("/rooms/list");
+
 		$stateProvider
-			.state('room-list', {
-				url: '/roomlist',
+			.state('rooms', {
+				url: '/rooms',
 				authenticate: false,
-				controller: 'roomListController',
-				templateUrl: '/partials/room-list.html'
+				template: '<div ui-view></div>',
+				controller: function($scope) {
+					console.log('herererereer');
+				}
+			})
+			.state('rooms.list', {
+				url: '/list',
+				authenticate: false,
+				templateUrl: '/partials/rooms-list.html',
+				controller: 'roomListController'
+			})
+			.state('rooms.detail', {
+				url: '/:room_id',
+				authenticate: false,
+				templateUrl: '/partials/rooms-detail.html',
+				controller: 'roomDetailController'
 			})
 	}
 ]);
@@ -27,32 +43,39 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'sceneService',
 	function($state, $rootScope, websocketService, parallelKeyService, sceneService) {
 
-		sceneService.newScene();
+		// sceneService.newScene();
+		var renderLoop = sceneService.render;
 
 		websocketService.addEvent("scene_load", function(msg) {
 
+			sceneService.newScene();
+			sceneService.setRenderer();
+
 			var agents = _.keys(msg.data.agents);
+
+			sceneService.createAgent(websocketService.websocket_id, true);
 
 			for (var i = 0; i < agents.length; i++) {
 				if (agents[i] !== websocketService.websocket_id) {
 					sceneService.createAgent(agents[i]);
 				}
 			}
-			sceneService.createAgent(websocketService.websocket_id, true);
-			sceneService.newScene();
-			sceneService.setRenderer();
+
 			$("#Screen1").append(sceneService.getElement());
-			setInterval(function() {
-				sceneService.render();
-			}, 40);
+			setInterval(renderLoop, 40);
 		});
 
 		websocketService.addEvent("scene_add_player", function(msg) {
-			console.log('====', msg);
+			console.log("add player");
 		});
 
 		websocketService.addEvent("scene_updated", function(msg) {
-
+			var ags = msg.data;
+			for (var key in ags) {
+				console.log(ags[key]);
+				sceneService.translateObject(ags[key].position);
+				sceneService.rotateObject(ags[key].rotation);
+			}
 		});
 
 		parallelKeyService.setFun("83" /*s*/ , function() {

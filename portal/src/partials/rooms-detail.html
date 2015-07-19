@@ -1,0 +1,13 @@
+<div class="container">
+	<div class="row">
+		<h3>You are ({{websockets_connected ? "Connected!" : "Not Connected"}}) as: &nbsp;&nbsp;{{websocket_id ? websocket_id : "Nobody"}}</h3>
+	</div>
+	<div class="row">
+		<h3>You are in room: &nbsp;&nbsp;{{room_id ? room_id : "None"}}</h3>
+	</div><br>
+	<div class="row">
+		<div class="col-md-2">
+			<button type="" ng-click="leaveRoom()" class="form-control btn btn-default">Leave Room</button>
+		</div>
+	</div>
+</div>

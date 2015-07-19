@@ -58,7 +58,7 @@ var Sim = function(id) {
 			agents[id].translateX(x);
 			agents[id].translateY(y);
 			agents[id].translateZ(z);
-			_update();
+			_update(id);
 			return agents[id].getPosition();
 		} else {
 			return null;
@@ -71,7 +71,7 @@ var Sim = function(id) {
 			agents[id].rotateX(x);
 			agents[id].rotateY(y);
 			agents[id].rotateZ(z);
-			_update();
+			_update(id);
 			return agents[id].getRotation();
 		} else {
 			return null;

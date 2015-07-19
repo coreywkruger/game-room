@@ -1,50 +1,63 @@
 var sceneServices = angular.module('sceneServices', []);
 
-sceneServices.factory('sceneService', [
+sceneServices.factory('sceneService', ['$q',
 
-	function() {
+	function($q) {
 		return new function() {
-
-			var _self = this;
 
 			this.renderer;
 			this.agent;
+			this.mainScene;
 
 			this.newScene = function() {
 				this.mainScene = new THREE.Scene();
-				this.camera = new THREE.PerspectiveCamera(45, 1, 1, 1000000);
+				this.camera = new THREE.PerspectiveCamera(45, 16 / 9, 1, 1000000);
+				this.camera.position.y = 9000;
+				this.camera.position.z = 50000;
 
 				var gridHelper = new THREE.GridHelper(10000000, 10000);
 				this.mainScene.add(gridHelper);
+			}.bind(this);
+
+			this.getScene = function() {
+				return this.mainScene;
 			};
 
 			this.addObject = function(obj) {
 				if (obj instanceof Array) {
 					for (var i = 0; i < obj.length; i++) {
-						_self.mainScene.add(obj[i]);
+						this.mainScene.add(obj[i]);
 					}
 				} else {
-					_self.mainScene.add(obj);
+					this.mainScene.add(obj);
 				}
-			};
+			}.bind(this);
 
 			this.deleteObject = function(id) {
-				_self.mainScene.remove(
-					_self.getObject(id)
+				this.mainScene.remove(
+					this.getObject(id)
 				);
 			};
 
 			this.translateObject = function(id, data) {
-				var ob = _self.getObject(id);
+				var ob = this.getObject(id);
 				ob.position.x = data.x ? data.x : ob.position.x;
 				ob.position.y = data.y ? data.y : ob.position.y;
 				ob.position.z = data.z ? data.z : ob.position.z;
 				return ob;
 			};
 
+			this.rotateObject = function(id, data) {
+				var ob = this.getObject(id);
+				ob.roatation.x = data.x ? data.x : ob.roatation.x;
+				ob.roatation.y = data.y ? data.y : ob.roatation.y;
+				ob.roatation.z = data.z ? data.z : ob.roatation.z;
+				return ob;
+			};
+
 			this.createAgent = function(id, mine) {
 
-				var geometry = new THREE.TextGeometry("..." + id.substring(id.length - 5, id.length), {
+				var geometry = new THREE.TextGeometry("..." + id.slice(-5), {
 					font: "helvetiker",
 					size: 5000
 				}); //new THREE.BoxGeometry( 10000, 10000, 10000 );
@@ -59,37 +72,36 @@ sceneServices.factory('sceneService', [
 
 				var cube = new THREE.Mesh(geometry, material);
 
-				cube.id = id;
+				cube.name = id;
 				cube.position.x += 2000;
 				cube.position.z += 2000;
 
 				if (mine) {
-					var controls = new THREE.OrbitControls(_self.camera);
-					_self.agent = cube;
-					_self.agent.add(_self.camera);
-					_self.addObject(_self.agent);
+					var controls = new THREE.OrbitControls(this.camera, this.getElement());
+					this.agent = cube;
+					this.agent.add(this.camera);
+					this.addObject(this.agent);
 				} else {
-					_self.addObject(cube);
+					this.addObject(cube);
 				}
-
 			};
 
 			this.setRenderer = function() {
-				_self.renderer = new THREE.WebGLRenderer({
+				this.renderer = new THREE.WebGLRenderer({
 					antialias: true,
 					autoClear: true,
 					alpha: true
 				});
-				_self.renderer.setSize(1000, 1000);
-				_self.renderer.setClearColor(0x000000);
-				_self.renderer.setClear = true;
-				return _self.renderer;
+				this.renderer.setSize(1000, 1000 * (9 / 16));
+				this.renderer.setClearColor(0x000000);
+				this.renderer.setClear = true;
+				return this.renderer;
 			};
 
 			this.getObject = function(id) {
-				for (var i = 0; i < _self.mainScene.children.length; i++) { // console.log(_self.mainScene.children[i].name, id);
-					if (_self.mainScene.children[i].id == id) {
-						return _self.mainScene.children[i];
+				for (var i = 0; i < this.mainScene.children.length; i++) {
+					if (this.mainScene.children[i].name == id) {
+						return this.mainScene.children[i];
 					}
 				}
 				console.log("JLKJDFSL:FKL:DFKLS:DFKLS:KL:FKL:FDKL:");
@@ -97,7 +109,7 @@ sceneServices.factory('sceneService', [
 			};
 
 			this.getElement = function() {
-				return _self.renderer.domElement;
+				return this.renderer.domElement;
 			};
 
 			this.render = function() {

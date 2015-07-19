@@ -12,12 +12,13 @@ var Room = function() {
 	this.users = {};
 	this.max_users = 10;
 	this.Sim = new Sim(this.id);
-	this.Sim.onUpdate(function() {
+	this.Sim.onUpdate(function(websocket_id) {
 		this.broadcast({
 			event: "scene_updated",
 			data: {
 				agents: this.Sim.getAgents()
-			}
+			},
+			websocket_id: websocket_id
 		});
 	}.bind(this));
 

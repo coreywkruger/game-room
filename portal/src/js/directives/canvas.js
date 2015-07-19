@@ -1,4 +1,4 @@
-var threejs_canvas = angular.module('canvasMods', ['sceneServices', 'controlServices']);
+// var threejs_canvas = angular.module('canvasMods', ['sceneServices', 'controlServices']);
 
 // threejs_canvas.controller('canvasCtrl', ['$scope', 'mainSvc',
 // 	function($scope, mainSvc) {
