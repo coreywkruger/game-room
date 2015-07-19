@@ -1,52 +1,63 @@
 const Agent = require('./agent'),
 	THREE = require('three'),
+	roomController = require('../app/controllers/room'),
 	_ = require('underscore');
 
-var Sim = function(id) {
+var Sim = function(room) {
 
-	var agents = {};
+	var ROOM = room;
 
-	this.id = id;
+	this.agents = {};
+	this.id = room.id;
 	this.max_agents = 10;
 	this.needs_update = false;
-
-	var _update;
-
 	this.onUpdate;
 	this.onNewUser;
 	this.onRemoveUser;
 
+	this.onUpdate = function(msg, id) {
+		roomController["scene_updated"](ROOM, msg);
+	};
+
+	this.onNewUser = function(msg, id) {
+		roomController["scene_add_player"](ROOM, msg);
+	};
+
+	this.onRemoveUser = function(msg, id) {
+		roomController["scene_remove_player"](ROOM, msg);
+	};
+
 	this.addAgent = function(id) {
-		if (_.size(agents) < this.max_agents) {
-			if (agents[id] == undefined) {
-				agents[id] = new Agent(id);
+		if (_.size(this.agents) < this.max_agents) {
+			if (this.agents[id] == undefined) {
+				this.agents[id] = new Agent(id);
 				var msg = {};
 				msg[id] = {
-					position: agents[id].getPosition(),
-					rotation: agents[id].getRotation()
+					position: this.agents[id].getPosition(),
+					rotation: this.agents[id].getRotation()
 				}
 				console.log("Sim Id: ", this.id);
 				this.onNewUser(msg, this.id);
-				return agents[id];
+				return this.agents[id];
 			}
 		}
 	}.bind(this);
 
 	this.removeAgent = function(id) {
-		if (agents[id]) {
-			agents = _.without(agents, id);
-			var agents = {};
-			agents[id] = id
+		if (this.agents[id]) {
+			this.agents = _.without(this.agents, id);
+			var ags = {};
+			ags[id] = id
 			this.onRemoveUser({
-				agents: agents
+				agents: ags
 			});
 		}
 	}.bind(this);
 
 	this.getAgents = function() {
 		var ags = {};
-		for (var a in agents) {
-			var agent = agents[a];
+		for (var a in this.agents) {
+			var agent = this.agents[a];
 			ags[a] = {
 				position: agent.getPosition(),
 				rotation: agent.getRotation()
@@ -56,35 +67,35 @@ var Sim = function(id) {
 	}
 
 	this.getAgent = function(id) {
-		return agents[id];
+		return this.agents[id];
 	}
 
 	this.translateAgent = function(id, x, y, z) {
 		console.log(x, y, z);
 		console.log((new Date()) + " Moving User: ..." + id.slice(-5) + " --> in Room: ..." + this.id.slice(-5));
-		if (agents[id]) {
-			agents[id].translateX(x);
-			agents[id].translateY(y);
-			agents[id].translateZ(z);
+		if (this.agents[id]) {
+			this.agents[id].translateX(x);
+			this.agents[id].translateY(y);
+			this.agents[id].translateZ(z);
 			this.onUpdate(this.getAgents(), this.id);
-			return agents[id].getPosition();
+			return this.agents[id].getPosition();
 		}
 	}
 
 	this.rotateAgent = function(id, x, y, z) {
 		console.log(x, y, z);
-		if (agents[id]) {
-			agents[id].rotateX(x);
-			agents[id].rotateY(y);
-			agents[id].rotateZ(z);
+		if (this.agents[id]) {
+			this.agents[id].rotateX(x);
+			this.agents[id].rotateY(y);
+			this.agents[id].rotateZ(z);
 			console.log("Sim Id: ", this.id);
 			this.onUpdate(this.getAgents(), this.id);
-			return agents[id].getRotation();
+			return this.agents[id].getRotation();
 		}
 	}.bind(this);
 
 	this.distanceBetween = function(id1, id2) {
-		if (agents[id1] && agents[id2]) {
+		if (this.agents[id1] && this.agents[id2]) {
 			var p1 = this.getAgent(id1).position;
 			var p2 = this.getAgent(id2).position;
 			var distance = p1.distanceTo(p2);

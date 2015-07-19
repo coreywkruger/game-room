@@ -73,6 +73,16 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 			}
 		});
 
+		websocketService.addEvent("scene_remove_player", function(msg) {
+			console.log("remove player");
+
+			var remove_me = _.keys(msg.data.agents)[0];
+
+			if (remove_me !== websocketService.websocket_id) {
+				sceneService.deleteObject(agents[i]);
+			}
+		});
+
 		websocketService.addEvent("scene_updated", function(msg) {
 			var ags = msg.data.agents;
 			for (var key in ags) {

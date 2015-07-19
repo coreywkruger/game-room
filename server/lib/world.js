@@ -1,9 +1,7 @@
-const Sim = require('./../src/sim'),
-	// User = require('./../src/user'),
+const SimSrc = require('./../src/sim'),
 	NSA = require('./nsa'),
 	Connection = require('./connection'),
-	// Channel = require('./channel'),
-	// M = require('./../lib/messages'),
+	roomController = require('../app/controllers/room'),
 	_ = require('underscore');
 
 var Room = function() {
@@ -11,41 +9,11 @@ var Room = function() {
 	this.id = 'rid_' + NSA.random(10);
 	this.users = {};
 	this.max_users = 10;
-	this.Sim = new Sim(this.id);
+	this.Sim = new SimSrc(this);
 
-	this.Sim.onUpdate = function(msg, id) {
-		this.broadcast({
-			event: "scene_updated",
-			data: {
-				agents: msg
-			},
-			websocket_id: id
-		}, id);
-	}.bind(this);
-
-	this.Sim.onNewUser = function(msg, id) {
-		this.broadcast({
-			event: "scene_add_player",
-			data: {
-				agents: msg
-			},
-			websocket_id: id
-		}, id);
-	}.bind(this);
-
-	this.Sim.onRemoveUser = function(msg, id) {
-		this.broadcast({
-			event: "scene_remove_player",
-			data: {
-				agents: msg
-			},
-			websocket_id: id
-		}, id);
-	}.bind(this);
-
-	this.broadcast = function(msg, oid) {
-		for (var u in this.users) {
-			this.users[u].sendMessage(msg);
+	var messageHandler = function(msg) {
+		if (roomController[msg.event]) {
+			roomController[msg.event](this, msg);
 		}
 	}.bind(this);
 
@@ -54,33 +22,13 @@ var Room = function() {
 			if (this.users[connection.id] == undefined) {
 
 				this.users[connection.id] = connection;
-				this.users[connection.id].onMessage(function(msg) {
-					console.log('Received Message: ', msg.event);
-					if (msg.event == "disconnect") {
-						this.removeUser(msg.data.id);
-					} else if (msg.event == "translate") {
-						this.Sim.translateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
-					} else if (msg.event == "rotate") {
-						this.Sim.rotateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
-					} else if (msg.event == "excuse_me") {
-						this.removeUser(msg.data.id);
-					} else if (msg.event == "scene_load") {
-						this.users[msg.websocket_id].sendMessage({
-							event: "scene_load",
-							data: {
-								agents: this.Sim.getAgents()
-							},
-							websocket_id: msg.websocket_id
-						});
-					}
-				}.bind(this));
-
+				this.users[connection.id].onMessage(messageHandler);
 				this.users[connection.id].sendMessage({
 					event: "room_selected",
+					websocket_id: connection.id,
 					data: {
 						room_id: connection.room_id
-					},
-					websocket_id: connection.id
+					}
 				});
 				this.Sim.addAgent(connection.id);
 				console.log("Users in Room: ..." + this.id.slice(-5), _.keys(this.users));
@@ -88,16 +36,22 @@ var Room = function() {
 			}
 		}
 	}
+}
 
-	this.removeUser = function(id, reason) {
-		if (this.users[id]) {
-			this.Sim.removeAgent(id);
-			this.users[id].ws.close();
-			delete this.users[id];
-			return id;
-		} else {
-			return null;
-		}
+Room.prototype.removeUser = function(id, reason) {
+	if (this.users[id]) {
+		this.Sim.removeAgent(id);
+		this.users[id].ws.close();
+		delete this.users[id];
+		return id;
+	} else {
+		return null;
+	}
+}
+
+Room.prototype.broadcast = function(msg) {
+	for (var u in this.users) {
+		this.users[u].sendMessage(msg);
 	}
 }
 
