@@ -43,26 +43,22 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'sceneService',
 	function($state, $rootScope, websocketService, parallelKeyService, sceneService) {
 
-		// sceneService.newScene();
-		var renderLoop = sceneService.render;
+		sceneService.newScene();
+
 
 		websocketService.addEvent("scene_load", function(msg) {
 
-			sceneService.newScene();
-			sceneService.setRenderer();
-
 			var agents = _.keys(msg.data.agents);
 
-			sceneService.createAgent(websocketService.websocket_id, true);
+			sceneService.getScene().then(function(res) {
+				sceneService.createAgent(websocketService.websocket_id, true);
 
-			for (var i = 0; i < agents.length; i++) {
-				if (agents[i] !== websocketService.websocket_id) {
-					sceneService.createAgent(agents[i]);
+				for (var i = 0; i < agents.length; i++) {
+					if (agents[i] !== websocketService.websocket_id) {
+						sceneService.createAgent(agents[i]);
+					}
 				}
-			}
-
-			$("#Screen1").append(sceneService.getElement());
-			setInterval(renderLoop, 40);
+			});
 		});
 
 		websocketService.addEvent("scene_add_player", function(msg) {
@@ -72,9 +68,10 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 		websocketService.addEvent("scene_updated", function(msg) {
 			var ags = msg.data;
 			for (var key in ags) {
-				console.log(ags[key]);
-				sceneService.translateObject(ags[key].position);
-				sceneService.rotateObject(ags[key].rotation);
+				if (sceneService.getObject(key)) {
+					sceneService.translateObject(ags[key].position);
+					sceneService.rotateObject(ags[key].rotation);
+				}
 			}
 		});
 

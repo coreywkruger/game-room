@@ -9,7 +9,9 @@ sceneServices.factory('sceneService', ['$q',
 			this.agent;
 			this.mainScene;
 
-			this.newScene = function() {
+			var scenePromise = $q.defer();
+
+			this.newScene = function(force, from) {
 				this.mainScene = new THREE.Scene();
 				this.camera = new THREE.PerspectiveCamera(45, 16 / 9, 1, 1000000);
 				this.camera.position.y = 9000;
@@ -17,11 +19,15 @@ sceneServices.factory('sceneService', ['$q',
 
 				var gridHelper = new THREE.GridHelper(10000000, 10000);
 				this.mainScene.add(gridHelper);
+				this.setRenderer();
+				scenePromise.resolve({
+					data: this.mainScene
+				});
 			}.bind(this);
 
 			this.getScene = function() {
-				return this.mainScene;
-			};
+				return scenePromise.promise;
+			}.bind(this);
 
 			this.addObject = function(obj) {
 				if (obj instanceof Array) {
@@ -73,6 +79,7 @@ sceneServices.factory('sceneService', ['$q',
 				var cube = new THREE.Mesh(geometry, material);
 
 				cube.name = id;
+				cube.type = "user";
 				cube.position.x += 2000;
 				cube.position.z += 2000;
 
@@ -104,7 +111,6 @@ sceneServices.factory('sceneService', ['$q',
 						return this.mainScene.children[i];
 					}
 				}
-				console.log("JLKJDFSL:FKL:DFKLS:DFKLS:KL:FKL:FDKL:");
 				return undefined;
 			};
 
@@ -114,7 +120,7 @@ sceneServices.factory('sceneService', ['$q',
 
 			this.render = function() {
 				this.renderer.render(this.mainScene, this.camera);
-			};
+			}.bind(this);
 
 			this.createMat = function() {
 				return new THREE.MeshLambertMaterial({
