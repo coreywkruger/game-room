@@ -68,9 +68,11 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 							room_id: $rootScope.room_id
 						});
 					} else {
-						if (this.websocket_id == msg.websocket_id) {
-							this.events[msg.event](msg);
-						}
+
+						// console.log(this.events[msg.event], msg);
+						// if (this.websocket_id == msg.websocket_id) {
+						this.events[msg.event](msg);
+						// }
 					}
 				}.bind(this);
 			};

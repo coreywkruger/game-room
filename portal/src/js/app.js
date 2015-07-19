@@ -66,11 +66,14 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 		});
 
 		websocketService.addEvent("scene_updated", function(msg) {
-			var ags = msg.data;
+			// console.log('=====>>>', msg);
+			var ags = msg.data.agents;
 			for (var key in ags) {
-				if (sceneService.getObject(key)) {
-					sceneService.translateObject(ags[key].position);
-					sceneService.rotateObject(ags[key].rotation);
+				var obj = sceneService.getObject(key);
+				console.log('||', key, ags[key]);
+				if (obj) {
+					sceneService.translateObject(key, ags[key].position);
+					sceneService.rotateObject(key, ags[key].rotation);
 				}
 			}
 		});

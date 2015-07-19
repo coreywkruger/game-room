@@ -13,9 +13,9 @@ sceneServices.factory('sceneService', ['$q',
 
 			this.newScene = function(force, from) {
 				this.mainScene = new THREE.Scene();
-				this.camera = new THREE.PerspectiveCamera(45, 16 / 9, 1, 1000000);
+				this.camera = new THREE.PerspectiveCamera(75, 16 / 9, 1, 1000000);
 				this.camera.position.y = 9000;
-				this.camera.position.z = 50000;
+				this.camera.position.z = 23000;
 
 				var gridHelper = new THREE.GridHelper(10000000, 10000);
 				this.mainScene.add(gridHelper);
@@ -55,9 +55,9 @@ sceneServices.factory('sceneService', ['$q',
 
 			this.rotateObject = function(id, data) {
 				var ob = this.getObject(id);
-				ob.roatation.x = data.x ? data.x : ob.roatation.x;
-				ob.roatation.y = data.y ? data.y : ob.roatation.y;
-				ob.roatation.z = data.z ? data.z : ob.roatation.z;
+				ob.rotation.x = data.x ? data.x : ob.rotation.x;
+				ob.rotation.y = data.y ? data.y : ob.rotation.y;
+				ob.rotation.z = data.z ? data.z : ob.rotation.z;
 				return ob;
 			};
 
