@@ -12,21 +12,42 @@ var Room = function() {
 	this.users = {};
 	this.max_users = 10;
 	this.Sim = new Sim(this.id);
-	this.Sim.onUpdate(function(websocket_id) {
+
+	this.Sim.onUpdate = function(msg, id) {
 		this.broadcast({
 			event: "scene_updated",
 			data: {
-				agents: this.Sim.getAgents()
+				agents: msg
 			},
-			websocket_id: websocket_id
-		});
-	}.bind(this));
+			websocket_id: id
+		}, id);
+	}.bind(this);
 
-	this.broadcast = function(msg) {
+	this.Sim.onNewUser = function(msg, id) {
+		this.broadcast({
+			event: "scene_add_player",
+			data: {
+				agents: msg
+			},
+			websocket_id: id
+		}, id);
+	}.bind(this);
+
+	this.Sim.onRemoveUser = function(msg, id) {
+		this.broadcast({
+			event: "scene_remove_player",
+			data: {
+				agents: msg
+			},
+			websocket_id: id
+		}, id);
+	}.bind(this);
+
+	this.broadcast = function(msg, oid) {
 		for (var u in this.users) {
 			this.users[u].sendMessage(msg);
 		}
-	};
+	}.bind(this);
 
 	this.assignUser = function(connection) {
 		if (_.size(this.users) < this.max_users) {
@@ -40,7 +61,7 @@ var Room = function() {
 					} else if (msg.event == "translate") {
 						this.Sim.translateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
 					} else if (msg.event == "rotate") {
-						this.Sim.translateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
+						this.Sim.rotateAgent(msg.websocket_id, msg.data.x, msg.data.y, msg.data.z);
 					} else if (msg.event == "excuse_me") {
 						this.removeUser(msg.data.id);
 					} else if (msg.event == "scene_load") {
@@ -101,8 +122,14 @@ Room.prototype.close = function(reason) {
 
 var Lobby = function() {
 	this.id = 'lid_' + NSA.random(10);
-	this.max_rooms = 10;
+	this.max_rooms = 5;
 	this.rooms = {};
+
+	setInterval(function() {
+		for (var key in this.rooms) {
+			console.log("Room: ", key, "->", _.keys(this.rooms[key].users));
+		}
+	}.bind(this), 2000);
 }
 
 Lobby.prototype.addRoom = function(room) {

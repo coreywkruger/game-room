@@ -63,6 +63,11 @@ sceneServices.factory('sceneService', ['$q',
 
 			this.createAgent = function(id, mine) {
 
+				for (var i = 0; i < this.mainScene.children.length; i++) {
+					if (id == this.mainScene.children[i].name && this.mainScene.children[i].type == "user") {
+						return;
+					}
+				}
 				var geometry = new THREE.TextGeometry("..." + id.slice(-5), {
 					font: "helvetiker",
 					size: 5000

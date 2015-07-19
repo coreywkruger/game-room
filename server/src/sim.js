@@ -12,28 +12,36 @@ var Sim = function(id) {
 
 	var _update;
 
-	this.onUpdate = function(cb) {
-		_update = cb;
-	}
+	this.onUpdate;
+	this.onNewUser;
+	this.onRemoveUser;
 
 	this.addAgent = function(id) {
 		if (_.size(agents) < this.max_agents) {
 			if (agents[id] == undefined) {
 				agents[id] = new Agent(id);
+				var msg = {};
+				msg[id] = {
+					position: agents[id].getPosition(),
+					rotation: agents[id].getRotation()
+				}
+				console.log("Sim Id: ", this.id);
+				this.onNewUser(msg, this.id);
 				return agents[id];
-			} else {
-				return null;
 			}
-		} else {
-			return null;
 		}
-	}
+	}.bind(this);
 
 	this.removeAgent = function(id) {
 		if (agents[id]) {
 			agents = _.without(agents, id);
+			var agents = {};
+			agents[id] = id
+			this.onRemoveUser({
+				agents: agents
+			});
 		}
-	}
+	}.bind(this);
 
 	this.getAgents = function() {
 		var ags = {};
@@ -58,10 +66,8 @@ var Sim = function(id) {
 			agents[id].translateX(x);
 			agents[id].translateY(y);
 			agents[id].translateZ(z);
-			_update(id);
+			this.onUpdate(this.getAgents(), this.id);
 			return agents[id].getPosition();
-		} else {
-			return null;
 		}
 	}
 
@@ -71,12 +77,11 @@ var Sim = function(id) {
 			agents[id].rotateX(x);
 			agents[id].rotateY(y);
 			agents[id].rotateZ(z);
-			_update(id);
+			console.log("Sim Id: ", this.id);
+			this.onUpdate(this.getAgents(), this.id);
 			return agents[id].getRotation();
-		} else {
-			return null;
 		}
-	}
+	}.bind(this);
 
 	this.distanceBetween = function(id1, id2) {
 		if (agents[id1] && agents[id2]) {
@@ -84,8 +89,6 @@ var Sim = function(id) {
 			var p2 = this.getAgent(id2).position;
 			var distance = p1.distanceTo(p2);
 			return distance;
-		} else {
-			return null;
 		}
 	}
 }

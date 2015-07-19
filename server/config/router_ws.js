@@ -17,6 +17,7 @@ var Router = function(ws) {
 
 	WebSocketServer.onConnection(function(connection) {
 		connection.onRoomChoice(function(room_id) {
+			console.log("onRoomChoice", room_id);
 			this.Lobby.rooms[room_id].assignUser(connection);
 		}.bind(this));
 	}.bind(this));

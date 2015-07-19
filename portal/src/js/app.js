@@ -63,15 +63,21 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 
 		websocketService.addEvent("scene_add_player", function(msg) {
 			console.log("add player");
+
+			var agents = _.keys(msg.data.agents);
+
+			for (var i = 0; i < agents.length; i++) {
+				if (agents[i] !== websocketService.websocket_id) {
+					sceneService.createAgent(agents[i]);
+				}
+			}
 		});
 
 		websocketService.addEvent("scene_updated", function(msg) {
-			// console.log('=====>>>', msg);
 			var ags = msg.data.agents;
 			for (var key in ags) {
 				var obj = sceneService.getObject(key);
-				console.log('||', key, ags[key]);
-				if (obj) {
+				if (obj && obj.name !== websocketService.websocket_id) {
 					sceneService.translateObject(key, ags[key].position);
 					sceneService.rotateObject(key, ags[key].rotation);
 				}

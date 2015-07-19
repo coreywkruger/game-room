@@ -69,7 +69,7 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 						});
 					} else {
 
-						// console.log(this.events[msg.event], msg);
+						console.log("Event", msg.event);
 						// if (this.websocket_id == msg.websocket_id) {
 						this.events[msg.event](msg);
 						// }

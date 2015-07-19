@@ -37,6 +37,7 @@ router.get('/room', function(req, res, next) {
 });
 
 router.post('/room/:id', function(req, res, next) {
+	// wsserver.Lobby.rooms
 	console.log("get room", req.params.id);
 });
 
