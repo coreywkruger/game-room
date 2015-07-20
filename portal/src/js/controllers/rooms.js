@@ -8,19 +8,6 @@ roomControllers.controller('roomListController', ['$scope', '$state', 'websocket
 			console.log($scope.room_ids);
 		});
 
-		// $scope.goToRoom = function(room_id) {
-		// 	console.log("Connecting to: ", room_id);
-		// 	websocketService.sendMessage("rooming", {
-		// 		room_id: room_id
-		// 	});
-		// };
-
-		// $scope.openConnetion = function() {
-		// 	websocketService.openConnection('localhost', '3334', function() {
-		// 		websocketService.listen();
-		// 	});
-		// };
-
 		$scope.open = function(room_id) {
 			$state.go('rooms.detail', {
 				room_id: room_id

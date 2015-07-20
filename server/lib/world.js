@@ -39,13 +39,11 @@ var Room = function() {
 }
 
 Room.prototype.removeUser = function(id, reason) {
+	console.log('REMOVING USER: ', id);
 	if (this.users[id]) {
 		this.Sim.removeAgent(id);
-		this.users[id].ws.close();
+		// this.users[id].ws.close();
 		delete this.users[id];
-		return id;
-	} else {
-		return null;
 	}
 }
 
@@ -58,8 +56,6 @@ Room.prototype.broadcast = function(msg) {
 Room.prototype.getUser = function(id) {
 	if (this.users[id]) {
 		return this.users[id];
-	} else {
-		return null;
 	}
 }
 
@@ -79,11 +75,11 @@ var Lobby = function() {
 	this.max_rooms = 5;
 	this.rooms = {};
 
-	setInterval(function() {
-		for (var key in this.rooms) {
-			console.log("Room: ", key, "->", _.keys(this.rooms[key].users));
-		}
-	}.bind(this), 2000);
+	// setInterval(function() {
+	// 	for (var key in this.rooms) {
+	// 		console.log("Room: ", key, "->", _.keys(this.rooms[key].users));
+	// 	}
+	// }.bind(this), 2000);
 }
 
 Lobby.prototype.addRoom = function(room) {

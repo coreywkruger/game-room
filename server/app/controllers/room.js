@@ -1,7 +1,8 @@
 var roomController = {
-	disconnect: function(room, args) {
-		room.removeUser(args.data.id);
-	},
+	// disconnect: function(room, args) {
+	// 	console.log("DISCONNECT");
+	// 	room.removeUser(args.data.id);
+	// },
 	translate: function(room, args) {
 		room.Sim.translateAgent(args.websocket_id, args.data.x, args.data.y, args.data.z);
 	},
@@ -9,6 +10,7 @@ var roomController = {
 		room.Sim.rotateAgent(args.websocket_id, args.data.x, args.data.y, args.data.z);
 	},
 	excuse_me: function(room, args) {
+		console.log("EXCUSE ME");
 		room.removeUser(args.data.id);
 	},
 	scene_load: function(room, args) {

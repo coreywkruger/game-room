@@ -49,7 +49,11 @@ var Connection = function(id, ws) {
 	}
 
 	this.sendMessage = function(msg) {
-		this.ws.send(serialize(msg));
+		try {
+			this.ws.send(serialize(msg));
+		} catch (err) {
+			console.log("Connection " + this.id + " is closed.");
+		}
 	}.bind(this);
 }
 

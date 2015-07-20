@@ -92,7 +92,7 @@ controlServices.factory('websocketService', ["$q", "$rootScope", "restangularSer
 			};
 
 			this.leaveRoom = function(cb) {
-				this.sendMessage("disconnect", {});
+				// this.sendMessage("disconnect", {});
 				$rootScope.websocket_id = "";
 				$rootScope.room_id = "";
 				$rootScope.websockets_connected = false;

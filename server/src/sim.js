@@ -36,7 +36,7 @@ var Sim = function(room) {
 					position: this.agents[id].getPosition(),
 					rotation: this.agents[id].getRotation()
 				}
-				console.log("Sim Id: ", this.id);
+				// console.log("Sim Id: ", this.id);
 				this.onNewUser(msg, this.id);
 				return this.agents[id];
 			}
@@ -45,12 +45,11 @@ var Sim = function(room) {
 
 	this.removeAgent = function(id) {
 		if (this.agents[id]) {
-			this.agents = _.without(this.agents, id);
+			// this.agents = _.without(this.agents, id);
+			delete this.agents[id];
 			var ags = {};
 			ags[id] = id
-			this.onRemoveUser({
-				agents: ags
-			});
+			this.onRemoveUser(ags);
 		}
 	}.bind(this);
 
@@ -71,8 +70,8 @@ var Sim = function(room) {
 	}
 
 	this.translateAgent = function(id, x, y, z) {
-		console.log(x, y, z);
-		console.log((new Date()) + " Moving User: ..." + id.slice(-5) + " --> in Room: ..." + this.id.slice(-5));
+		// console.log(x, y, z);
+		// console.log((new Date()) + " Moving User: ..." + id.slice(-5) + " --> in Room: ..." + this.id.slice(-5));
 		if (this.agents[id]) {
 			this.agents[id].translateX(x);
 			this.agents[id].translateY(y);
@@ -83,12 +82,12 @@ var Sim = function(room) {
 	}
 
 	this.rotateAgent = function(id, x, y, z) {
-		console.log(x, y, z);
+		// console.log(x, y, z);
 		if (this.agents[id]) {
 			this.agents[id].rotateX(x);
 			this.agents[id].rotateY(y);
 			this.agents[id].rotateZ(z);
-			console.log("Sim Id: ", this.id);
+			// console.log("Sim Id: ", this.id);
 			this.onUpdate(this.getAgents(), this.id);
 			return this.agents[id].getRotation();
 		}
