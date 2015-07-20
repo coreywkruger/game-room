@@ -30,10 +30,21 @@ router.get('/signup', function(req, res, next) {
 
 router.get('/room', function(req, res, next) {
 	console.log("get rooms");
-	var ids = _.keys(wsserver.Lobby.rooms);
+	var data = [];
+	var rooms = wsserver.Lobby.rooms;
+	for (var key in rooms) {
+		data.push({
+			id: rooms[key].id,
+			users: _.size(rooms[key].users) || 0
+		});
+	}
 	res.json({
-		data: ids
+		data: data
 	});
+	// var ids = _.keys(wsserver.Lobby.rooms);
+	// res.json({
+	// 	data: ids
+	// });
 });
 
 router.post('/room/:id', function(req, res, next) {

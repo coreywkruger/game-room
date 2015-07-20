@@ -1,4 +1,4 @@
-const Sim = require('./../src/sim'),
+const Sim = require('./sim'),
 	User = require('./../src/user'),
 	Connection = require('./connection'),
 	Web = require('ws'),

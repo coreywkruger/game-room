@@ -13,8 +13,11 @@
 	<div class="row">
 		<form class="form-group">
 			<div ng-repeat="room in room_ids">
-				<div class="col-md-6">
-					<button type="" ng-click="open(room)" class="form-control btn btn-default">{{room}}</button>
+				<div class="col-md-6 text-center ">
+					<span>
+						<label>Room ID: {{room.id}}</label>
+						<button type="" ng-click="open(room.id)" class="form-control btn btn-default"># of Users: {{room.users}}</button><br><br>
+					</span>
 				</div>
 			</div>
 		</form>

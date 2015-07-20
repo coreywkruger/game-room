@@ -75,9 +75,7 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 
 		websocketService.addEvent("scene_remove_player", function(msg) {
 			console.log("remove player");
-
 			var remove_me = _.keys(msg.data.agents)[0];
-			console.log(msg, remove_me);
 			if (remove_me !== websocketService.websocket_id) {
 				console.log("IN");
 				sceneService.deleteObject(remove_me);
@@ -93,6 +91,16 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 					sceneService.rotateObject(key, ags[key].rotation);
 				}
 			}
+		});
+
+		websocketService.addEvent("room_not_found", function(msg) {
+			websocketService.leaveRoom(function() {
+				websocketService.close();
+				sceneService.newScene();
+				clearInterval(sceneService.render);
+				$("#Screen1").empty();
+				$state.go('rooms.list');
+			});
 		});
 
 		parallelKeyService.setFun("83" /*s*/ , function() {

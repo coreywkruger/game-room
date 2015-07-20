@@ -19,13 +19,11 @@ roomControllers.controller('roomListController', ['$scope', '$state', 'websocket
 roomControllers.controller('roomDetailController', ['$scope', '$state', '$stateParams', 'sceneService', 'websocketService',
 	function($scope, $state, $stateParams, sceneService, websocketService) {
 
-		var renderLoop = sceneService.render;
-
 		sceneService.getScene().then(function(res) {
 
 			$("#Screen1").append(sceneService.getElement());
 
-			setInterval(renderLoop, 40);
+			setInterval(sceneService.render, 40);
 		});
 
 		websocketService.open($stateParams['room_id'], function(id) {
@@ -38,10 +36,9 @@ roomControllers.controller('roomDetailController', ['$scope', '$state', '$stateP
 			$scope.current_room = "";
 			$scope.id = "";
 			websocketService.leaveRoom(function() {
-				console.log("CLOSING");
 				websocketService.close();
 				sceneService.newScene();
-				clearInterval(renderLoop);
+				clearInterval(sceneService.render);
 				$("#Screen1").empty();
 				$state.go('rooms.list');
 			});

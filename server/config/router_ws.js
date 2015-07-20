@@ -18,7 +18,13 @@ var Router = function(ws) {
 	WebSocketServer.onConnection(function(connection) {
 		connection.onRoomChoice(function(room_id) {
 			console.log("onRoomChoice", room_id);
-			this.Lobby.rooms[room_id].assignUser(connection);
+			if (this.Lobby.rooms[room_id]) {
+				this.Lobby.rooms[room_id].assignUser(connection);
+			} else {
+				connection.sendMessage({
+					event: "room_not_found"
+				});
+			}
 		}.bind(this));
 	}.bind(this));
 }

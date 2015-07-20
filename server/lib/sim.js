@@ -1,4 +1,4 @@
-const Agent = require('./agent'),
+const Agent = require('./../src/agent'),
 	THREE = require('three'),
 	roomController = require('../app/controllers/room'),
 	_ = require('underscore');

@@ -1,4 +1,4 @@
-const SimSrc = require('./../src/sim'),
+const SimLib = require('./sim'),
 	NSA = require('./nsa'),
 	Connection = require('./connection'),
 	roomController = require('../app/controllers/room'),
@@ -6,10 +6,10 @@ const SimSrc = require('./../src/sim'),
 
 var Room = function() {
 
-	this.id = 'rid_' + NSA.random(10);
+	this.id = 'rid_' + NSA.random(7);
 	this.users = {};
 	this.max_users = 10;
-	this.Sim = new SimSrc(this);
+	this.Sim = new SimLib(this);
 
 	var messageHandler = function(msg) {
 		if (roomController[msg.event]) {
@@ -48,6 +48,7 @@ Room.prototype.removeUser = function(id, reason) {
 }
 
 Room.prototype.broadcast = function(msg) {
+	console.log("broadcast:", msg);
 	for (var u in this.users) {
 		this.users[u].sendMessage(msg);
 	}
@@ -72,14 +73,8 @@ Room.prototype.close = function(reason) {
 
 var Lobby = function() {
 	this.id = 'lid_' + NSA.random(10);
-	this.max_rooms = 5;
+	this.max_rooms = 6;
 	this.rooms = {};
-
-	// setInterval(function() {
-	// 	for (var key in this.rooms) {
-	// 		console.log("Room: ", key, "->", _.keys(this.rooms[key].users));
-	// 	}
-	// }.bind(this), 2000);
 }
 
 Lobby.prototype.addRoom = function(room) {
