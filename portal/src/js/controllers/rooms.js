@@ -5,7 +5,7 @@ roomControllers.controller('roomListController', ['$scope', '$state', 'websocket
 
 		websocketService.acquireRoomIds().then(function(res) {
 			$scope.room_ids = websocketService.room_ids;
-			console.log($scope.room_ids);
+			// console.log($scope.room_ids);
 		});
 
 		$scope.open = function(room_id) {

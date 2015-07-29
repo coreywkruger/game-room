@@ -40,7 +40,7 @@ var App = function() {
 
 
 	// `boot2docker ip` === `192.168.59.103`
-	this.host = config.app.host; // config.get('app').host; // '0.0.0.0';
+	this.host = "172.17.2.104"; //config.app.host; // "192.168.2.202"; // // config.get('app').host; // '0.0.0.0';
 	this.port = config.app.port; // config.get('app').port; // 8889;
 };
 

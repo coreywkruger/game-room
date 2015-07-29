@@ -21,9 +21,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 				url: '/rooms',
 				authenticate: false,
 				template: '<div ui-view></div>',
-				controller: function($scope) {
-					console.log('herererereer');
-				}
+				controller: function($scope) {}
 			})
 			.state('rooms.list', {
 				url: '/list',
@@ -45,21 +43,26 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 
 		sceneService.newScene();
 
-
-		websocketService.addEvent("scene_load", function(msg) {
-
-			var agents = _.keys(msg.data.agents);
-
-			sceneService.getScene().then(function(res) {
-				sceneService.createAgent(websocketService.websocket_id, true);
-
-				for (var i = 0; i < agents.length; i++) {
-					if (agents[i] !== websocketService.websocket_id) {
-						sceneService.createAgent(agents[i]);
-					}
-				}
-			});
+		websocketService.open(null, function(id) {
+			// websocketService.listen();
+			// console.log("OPENED");
+			// $scope.$apply()
 		});
+
+		// websocketService.addEvent("scene_load", function(msg) {
+		//
+		// 	var agents = _.keys(msg.data.agents);
+		//
+		// 	sceneService.getScene().then(function(res) {
+		// 		sceneService.createAgent("212132"/*websocketService.websocket_id*/, true);
+		//
+		// 		for (var i = 0; i < agents.length; i++) {
+		// 			if (agents[i] !== "212132" /*websocketService.websocket_id*/) {
+		// 				sceneService.createAgent(agents[i]);
+		// 			}
+		// 		}
+		// 	});
+		// });
 
 		websocketService.addEvent("scene_add_player", function(msg) {
 			console.log("add player");
@@ -82,16 +85,16 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 			}
 		});
 
-		websocketService.addEvent("scene_updated", function(msg) {
-			var ags = msg.data.agents;
-			for (var key in ags) {
-				var obj = sceneService.getObject(key);
-				if (obj && obj.name !== websocketService.websocket_id) {
-					sceneService.translateObject(key, ags[key].position);
-					sceneService.rotateObject(key, ags[key].rotation);
-				}
-			}
-		});
+		// websocketService.addEvent("scene_updated", function(msg) {
+		// 	var ags = msg.data.agents;
+		// 	for (var key in ags) {
+		// 		var obj = sceneService.getObject(key);
+		// 		if (obj && obj.name !== websocketService.websocket_id) {
+		// 			sceneService.translateObject(key, ags[key].position);
+		// 			sceneService.rotateObject(key, ags[key].rotation);
+		// 		}
+		// 	}
+		// });
 
 		websocketService.addEvent("room_not_found", function(msg) {
 			websocketService.leaveRoom(function() {
@@ -104,42 +107,57 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 		});
 
 		parallelKeyService.setFun("83" /*s*/ , function() {
-			sceneService.move_backward(sceneService.agent, function() {
-				websocketService.sendMessage("translate", {
-					x: sceneService.agent.position.x,
-					y: sceneService.agent.position.y,
-					z: sceneService.agent.position.z
-				});
-			});
+			// sceneService.move_backward(sceneService.agent, function() {
+				// websocketService.sendMessage("translate", {
+				// 	x: sceneService.agent.position.x,
+				// 	y: sceneService.agent.position.y,
+				// 	z: sceneService.agent.position.z
+				// });
+				websocketService.sendMessage("translate", [
+					sceneService.agent.position.x,
+					sceneService.agent.position.y,
+					sceneService.agent.position.z
+				]);
+			// });
 		});
 
 		parallelKeyService.setFun("87" /*w*/ , function() {
-			sceneService.move_forward(sceneService.agent, function() {
-				websocketService.sendMessage("translate", {
-					x: sceneService.agent.position.x,
-					y: sceneService.agent.position.y,
-					z: sceneService.agent.position.z
-				});
-			});
+			// sceneService.move_forward(sceneService.agent, function() {
+				// websocketService.sendMessage("translate", {
+				// 	x: sceneService.agent.position.x,
+				// 	y: sceneService.agent.position.y,
+				// 	z: sceneService.agent.position.z
+				// });
+				websocketService.sendMessage("translate", [
+					sceneService.agent.position.x,
+					sceneService.agent.position.y,
+					sceneService.agent.position.z
+				]);
+			// });
 		});
 
 		parallelKeyService.setFun("68" /*d*/ , function() {
-			sceneService.rotate_right(sceneService.agent, function() {
-				websocketService.sendMessage("rotate", {
-					x: sceneService.agent.rotation.x,
-					y: sceneService.agent.rotation.y,
-					z: sceneService.agent.rotation.z
-				});
-			});
+			// sceneService.rotate_right(sceneService.agent, function() {
+				websocketService.sendMessage("rotate", [
+					sceneService.agent.rotation.x,
+					sceneService.agent.rotation.y,
+					sceneService.agent.rotation.z
+				]);
+			// });
 		});
 		parallelKeyService.setFun("65" /*a*/ , function() {
-			sceneService.rotate_left(sceneService.agent, function() {
-				websocketService.sendMessage("rotate", {
-					x: sceneService.agent.rotation.x,
-					y: sceneService.agent.rotation.y,
-					z: sceneService.agent.rotation.z
-				});
-			});
+			// sceneService.rotate_left(sceneService.agent, function() {
+				// websocketService.sendMessage("rotate", {
+				// 	x: sceneService.agent.rotation.x,
+				// 	y: sceneService.agent.rotation.y,
+				// 	z: sceneService.agent.rotation.z
+				// });
+				websocketService.sendMessage("rotate", [
+					sceneService.agent.rotation.x,
+					sceneService.agent.rotation.y,
+					sceneService.agent.rotation.z
+				]);
+			// });
 		});
 
 		parallelKeyService.startControls();
