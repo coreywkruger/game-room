@@ -84,7 +84,7 @@ sceneServices.factory('sceneService', ['$q',
 
 				var cube = new THREE.Object3D();
 
-				var idGeometry = new THREE.TextGeometry("..." + id.slice(-7), {
+				var idGeometry = new THREE.TextGeometry(id, {//"..." + id.slice(-7), {
 					font: "helvetiker",
 					size: 2000
 				}); //new THREE.BoxGeometry( 10000, 10000, 10000 );
@@ -152,8 +152,10 @@ sceneServices.factory('sceneService', ['$q',
 					this.agent = cube;
 					this.agent.add(this.camera);
 					this.addObject(this.agent);
+					return this.agent;
 				} else {
 					this.addObject(cube);
+					return cube;
 				}
 			};
 
@@ -175,6 +177,7 @@ sceneServices.factory('sceneService', ['$q',
 						return this.mainScene.children[i];
 					}
 				}
+				return null
 			};
 
 			this.getElement = function() {
