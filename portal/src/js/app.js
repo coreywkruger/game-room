@@ -62,8 +62,7 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 		websocketService.addEvent("scene_add_player", function(msg) {
 			console.log("add player");
 			var agent_id = msg.agent;
-			if (agent_id !== websocketService.key &&
-				sceneService.getObject(agent_id) == null) {
+			if (agent_id !== websocketService.id && sceneService.getObject(agent_id) == null) {
 				sceneService.createAgent(agent_id);
 			}
 		});

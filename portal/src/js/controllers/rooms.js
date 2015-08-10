@@ -37,7 +37,7 @@ roomControllers.controller('roomClaimNameController', ['$scope', '$state', '$sta
 
 roomControllers.controller('roomDetailController', ['$scope', '$state', '$stateParams', 'sceneService', 'websocketService',
 	function ($scope, $state, $stateParams, sceneService, websocketService) {
-		console.log("=======", $stateParams);
+
 		var halt = false;
 		var animloop = function (){
 			sceneService.render();
@@ -57,18 +57,19 @@ roomControllers.controller('roomDetailController', ['$scope', '$state', '$stateP
 			}
 
 			websocketService.listen();
-			websocketService.loadScene($stateParams['room_id']).then(function (loadSceneRes) {
-
-				sceneService.createAgent(websocketService.key, true);
-
-				var agents = loadSceneRes.agents;
-
+			websocketService.loadScene($stateParams['room_id']).then(function (agents) {
+				console.log("---->", agents);
+				sceneService.createAgent(websocketService.id, true);
+				agents = agents.agents
 				for (var i = 0; i < agents.length; i++) {
-					if (agents[i].id !== websocketService.key && sceneService.getObject(agents[i].id) == null) {
+					console.log("===========1",agents[i].id, websocketService.id, sceneService.getObject(agents[i].id));
+					console.log("===========2",agents[i].id !== websocketService.id && sceneService.getObject(agents[i].id) == null);
+					if (agents[i].id !== websocketService.id && sceneService.getObject(agents[i].id) == null) {
 						var obj = sceneService.createAgent(agents[i].id);
 						sceneService.translateObject(obj.name, agents[i].position);
 						sceneService.rotateObject(obj.name, agents[i].rotation);
 					}
+					console.log("===========3", sceneService.mainScene.children)
 				}
 			});
 		});

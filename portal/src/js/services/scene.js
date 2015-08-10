@@ -64,11 +64,6 @@ sceneServices.factory('sceneService', ['$q',
 
 			this.createAgent = function(id, mine) {
 
-				for (var i = 0; i < this.mainScene.children.length; i++) {
-					if (id == this.mainScene.children[i].name && this.mainScene.children[i].type == "user") {
-						return;
-					}
-				}
 				var greenMat = new THREE.MeshBasicMaterial({
 					color: 0x00ff00,
 					wireframe: true
@@ -146,7 +141,7 @@ sceneServices.factory('sceneService', ['$q',
 				cube.type = "user";
 				cube.position.x += 2000;
 				cube.position.z += 2000;
-
+				console.log("|||||",mine);
 				if (mine) {
 					var controls = new THREE.OrbitControls(this.camera, this.getElement());
 					this.agent = cube;

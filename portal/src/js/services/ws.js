@@ -22,7 +22,7 @@ controlServices.factory('websocketService', [
 			this.socket;
 			this.events = {};
 			this.index = 10000000000;
-			this.name;
+			this.id;
 			this.rooms = [];
 			this.room_id;
 			this.key;
@@ -41,6 +41,7 @@ controlServices.factory('websocketService', [
 				var promise = this.api.one(room_id).one("name").post("", name);
 				promise.then(function (res) {
 					this.key = res;
+					this.id = name;
 					// console.log("Your key:", this.key);
 					// console.log("Your name (pending):", this.name)
 				}.bind(this));
