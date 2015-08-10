@@ -37,15 +37,12 @@ controlServices.factory('websocketService', [
 				return promise;
 			};
 
-			this.claimName = function (name) {
-				var promise = this.api.one("0").one("name").post("", {
-					name: name
-				});
+			this.claimName = function (room_id, name) {
+				var promise = this.api.one(room_id).one("name").post("", name);
 				promise.then(function (res) {
-					this.key = res.key;
-					this.name = name;
-					console.log("Your key:", this.key);
-					console.log("Your name (pending):", this.name)
+					this.key = res;
+					// console.log("Your key:", this.key);
+					// console.log("Your name (pending):", this.name)
 				}.bind(this));
 				return promise;
 			};
@@ -61,17 +58,21 @@ controlServices.factory('websocketService', [
 			this.open = function (room_id, cb) {
 				this.socket = new WebSocket(configService.websocket_host + configService.api_prefix +
 					"/room/" + room_id +
-					"?key=" + this.key);
+					"?room_key=" + this.key);
 
-				this.socket.onerror = function (event) {
-					console.log(event)
+				this.socket.onerror = function (error) {
+					// $rootScope.websockets_connected = false;
+					cb(error);
+				}
+
+				this.socket.onclose = function (event) {
+					// $state.go("room.list")
 				}
 
 				this.socket.onopen = function () {
 					if (this.socket.bufferedAmount == 0) {
-						// this.setRoomReady()
 						$rootScope.websockets_connected = true;
-						cb();
+						cb(null);
 					}
 				}.bind(this);
 			};

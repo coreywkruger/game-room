@@ -29,14 +29,26 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 				templateUrl: '/partials/rooms-list.html',
 				controller: 'roomListController'
 			})
-			.state('rooms.claim-name', {
+
+			.state('rooms.detail', {
+				url: '/:room_id',
+				authenticate: false,
+				template: '<div ui-view></div>',
+				controller: function($state){
+					if($state.current.name !== "'rooms.detail.claim" &&
+						$state.current.name !== "'rooms.detail.open"){
+						$state.go("rooms.detail.claim")
+					}
+				}
+			})
+			.state('rooms.detail.claim', {
 				url: '/claim-name',
 				authenticate: false,
 				templateUrl: '/partials/claim-name.html',
 				controller: 'roomClaimNameController'
 			})
-			.state('rooms.detail', {
-				url: '/:room_id?name',
+			.state('rooms.detail.open', {
+				url: '/open?name',
 				authenticate: false,
 				templateUrl: '/partials/rooms-detail.html',
 				controller: 'roomDetailController'
@@ -50,7 +62,7 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 		websocketService.addEvent("scene_add_player", function(msg) {
 			console.log("add player");
 			var agent_id = msg.agent;
-			if (agent_id !== websocketService.name &&
+			if (agent_id !== websocketService.key &&
 				sceneService.getObject(agent_id) == null) {
 				sceneService.createAgent(agent_id);
 			}
@@ -59,7 +71,7 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 		websocketService.addEvent("scene_remove_player", function(msg) {
 			console.log("remove player");
 			var remove_me = msg.agent
-			if (remove_me !== websocketService.name) {
+			if (remove_me !== websocketService.key) {
 				console.log("IN");
 				sceneService.deleteObject(remove_me);
 			}
@@ -69,7 +81,7 @@ app.run(['$state', '$rootScope', 'websocketService', 'parallelKeyService', 'scen
 			var ags = msg.agents;
 			console.log(ags)
 			for (var key in ags) {
-				if(ags[key].id !== websocketService.name){
+				if(ags[key].id !== websocketService.key){
 					var obj = sceneService.getObject(ags[key].id);
 					sceneService.translateObject(obj.name, ags[key].position);
 					sceneService.rotateObject(obj.name, ags[key].rotation);
